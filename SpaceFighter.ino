@@ -52,8 +52,9 @@ typedef struct
     byte lives;
     boolean alive;
     byte numberOfSuperbombs;
-    // set invincible to 1 and then every two second a left-shift until invincible
-    // is zero. This way you are 16 seconds invincible. Or less, if you set
+    // set invincible to 1 and then every two second a left-shift until 
+    // invincible is zero. 
+    // This way you are 16 seconds invincible. Or less, if you set
     // invincible to 2, 4 or 8.
     byte invincible;
     byte bulletType;
@@ -97,6 +98,12 @@ typedef struct
     byte speed;
     boolean alive;
     boolean playersBullet;
+    // Use 255 degrees, where 0 is right up, 45 is straight up, 45+180 straight
+    // down and 45+90 is to the left, etc.
+    //              90      45      0
+    //            135      enemy
+    //              180     225     255
+    byte direction;
 } Bullet;
 
 typedef struct
@@ -106,6 +113,7 @@ typedef struct
     boolean alive;
     // Each number is a placeholder for different supplies, e.g. extra live
     // superbomb, weapon upgrade or invincibility (or even ship upgrade?).
+    // 0 is most rare, >8 is most common.
     byte type;
 } Supply;
 
@@ -123,6 +131,8 @@ Enemy enemies[10];
 byte numberOfEnemies;
 Bullet bullets[100];
 byte numberOfBullets;
+byte supplies[3];
+byte noOfSupplies = 0;
 
 /**
  * @brief Intro with wooosh - Arduboy.
@@ -280,6 +290,39 @@ void generateEnemy()
         {
             e.supply = true;
         }
+        if(enemies[i].type < 2)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 4)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 8)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 16)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 32)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 64)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 128)
+        {
+            e.height = ;
+            e.width = ;
+        } else if(enemies[i].type < 256)
+        {
+            e.height = ;
+            e.width = ;
+        }
         enemies[numberOfEnemies] = e;
         numberOfEnemies++;
     }
@@ -323,24 +366,121 @@ void drawEnemies()
 }
 
 /**
- * @brief Create supply
+ * @brief Create supply at the place where the enemy died.
+ * @param[in] x X-Coordinate of the destroyed enemy.
+ * @param[in] y Y-Coordinate of the destroyed enemy.
  */
+void createSupply(byte x, byte y)
+{
+    Supply s;
+    s.x = x;
+    s.y = y;
+    s.type = random(0,8);
+    s.alive = true;
+    supplies[noOfSupplies] = s;
+    drawSupply();
+}
 
 /**
  * @brief Draw supply
  */
+void drawSupply()
+{
+    for(int i=0; i<noOfSupplies; i++)
+    {
+        if(supplies[i].type < 2)
+        {
+            arduboy.drawBitmap(0, 0, supply_00, 128, 64, 1);
+        } else if(supplies[i].type < 4)
+        {
+            arduboy.drawBitmap(0, 0, supply_01, 128, 64, 1);
+        } else if(supplies[i].type < 8)
+        {
+            arduboy.drawBitmap(0, 0, supply_02, 128, 64, 1);
+        } else if(supplies[i].type < 16)
+        {
+            arduboy.drawBitmap(0, 0, supply_03, 128, 64, 1);
+        } else if(supplies[i].type < 32)
+        {
+            arduboy.drawBitmap(0, 0, supply_04, 128, 64, 1);
+        } else if(supplies[i].type < 64)
+        {
+            arduboy.drawBitmap(0, 0, supply_05, 128, 64, 1);
+        } else if(supplies[i].type < 128)
+        {
+            arduboy.drawBitmap(0, 0, supply_06, 128, 64, 1);
+        } else if(supplies[i].type < 256)
+        {
+            arduboy.drawBitmap(0, 0, supply_07, 128, 64, 1);
+        }
+    }
+}
 
 /**
- * @brief Supplies move
+ * @brief Supplies move just straight to the left.
  */
+void moveSupplies()
+{
+    for(int i; i<noOfSupplies; i++)
+    {
+        supplies[i].x++;
+    }
+}
 
 /**
  * @brief Bullets move
+ * TODO: Check speed.
  */
+void moveBullets()
+{
+    for(int i=0; i<numberOfBullets; i++)
+    {
+        if(bullets[i].speed ...)
+        switch(bullets[i].direction)
+        {
+            case 0:
+                bullets[i].x--;
+                bullets[i].y++;
+                break;
+                
+            case 45:
+                bullets[i].y++;
+                break;
+                
+            case 90:
+                bullets[i].x++;
+                bullets[i].y++;
+                break;
+                
+            case 135:
+                bullets[i].x--;
+                break;
+                
+            case 180:
+                bullets[i].x--;
+                bullets[i].y--;
+                break;
+                
+            case 225:
+                bullets[i].y--;
+                break;
+                
+            case 255:
+                bullets[i].x++;
+                bullets[i].y--;
+                break;
+                
+            default:
+                bullets[i].x++;
+        }
+    }
+}
 
 /**
  * @brief Player moves
  */
+
+
 
 /**
  * @brief Enemies move
@@ -359,11 +499,12 @@ void drawEnemies()
  */
 
 /**
- * @brief Player: Check collision.
+ * @brief Player: Check collision with bullet, enemy and supply.
  */
 
 /**
  * @brief Enemy: Check shot.
+ * TODO: if(noOfSupplies = supplie.length) no supply
  */
 
 /**
