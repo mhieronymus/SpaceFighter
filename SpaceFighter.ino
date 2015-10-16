@@ -48,7 +48,7 @@ typedef struct
     byte height;
     byte width;
     unsigned int score;
-    byte destroyed_ships;
+    byte destroyedShips;
     byte lives;
     boolean alive;
     byte numberOfSuperbombs;
@@ -80,8 +80,9 @@ typedef struct
     byte lifepoints;
     boolean alive;
     // Each number is a placeholder for another movement, e.g. straight-forward
-    // or sine.
+    // or sine. Needs to be implemented.
     byte movement;
+    byte direction;
     // If true, create a random supply after destruction.
     boolean supply;
 } Enemy;
@@ -283,7 +284,7 @@ void generateEnemy()
         e.x = SCREEN_WIDTH-1;
         e.y = random(0, SCREEN_HEIGHT-1);
         e.type = random(0, 8);
-        e.lifepoints = random(1+player.destroyed_ships, 10+player.destroyed_ships);
+        e.lifepoints = random(1+player.destroyedShips, 10+player.destroyedShips);
         e.alive = true;
         e.movement = random(0, 8);
         if(random(0, 100) > 95)
@@ -479,20 +480,150 @@ void moveBullets()
 /**
  * @brief Player moves
  */
-
+void movePlayer()
+{
+    switch(arduboy.getInput())
+    {
+        case (LEFT + UP):
+            player.x--;
+        case UP:
+            player.y++;
+            break;
+            
+        case (RIGHT + DOWN):
+            player.x++;
+        case DOWN:
+            player.y--;
+            break;
+            
+        case (DOWN + LEFT):
+            player.y--;
+        case LEFT:
+            player.x--;
+            break;
+            
+        case (UP + RIGHT):
+            player.y++;
+        case RIGHT:
+            player.x++;
+            break;
+            
+        default:
+            // Do not change direction
+    }
+}
 
 
 /**
  * @brief Enemies move
+ * TODO: Alter the directions.
  */
+void moveEnemies()
+{
+    for(int i=0; i<numberOfEnemies; i++)
+    {
+        //TODO Alter direction of enemy
+        if(enemies[i].speed ...)
+        switch(enemies[i].direction)
+        {
+            // LEft and LEFT+UP
+            case 0:
+                enemies[i].x--;
+            case 45:
+                enemies[i].y++;
+                break;
+                
+            // UP+RIGHT
+            case 90:
+                enemies[i].x++;
+                enemies[i].y++;
+                break;
+                
+            // Left and LEFT+DOWN
+            case 180:
+                enemies[i].y--;
+            case 135:
+                enemies[i].x--;
+                break;
+                
+            // DOWN and DOWN+RIGHT
+            case 255:
+                enemies[i].x++;
+            case 225:
+                enemies[i].y--;
+                break;
+                
+            default:
+                enemies[i].x--;
+        }
+    }
+}
 
 /**
  * @brief Stars move
  */
+void moveStars()
+{
+    for(int i=0; i<numberOfStars; i++)
+    {
+        stars[i].x--;
+    }
+}
 
 /**
  * @brief Enemies shoot
  */
+void enemiesShoot()
+{
+    int i = 0;
+    while(numberOfBullets<bullets.length-1 && i<numberOfEnemies)
+    {
+        //TODO Check if it is time for the enemy to shoot. Might depend on
+        // shiptype
+        if(enemies[i].type < 2)
+        {
+            Bullet b;
+            // Shoot the bullet up left from the enemy.
+            b.x = enemies[i].x + 1;
+            b.y = enemies[i].y + 1;
+            // Height and width depend on appearance which correlates to the
+            // bitmap.
+            b.appearance = 1;
+            b.height = 2;
+            b.width = 2;
+            // There are no lifepoints for the player. Every hit is a kill.
+            b.damage = 0;
+            b.speed = (player.destroyedShips << 3) + 2;
+            b.alive = true;
+            playersBullet = false;
+            b.direction = 90
+            bullets[numberOfBullets] = b;
+            numberOfBullets++;
+        } else if(supplies[i].type < 4)
+        {
+         // TODO   
+        } else if(supplies[i].type < 8)
+        {
+
+        } else if(supplies[i].type < 16)
+        {
+
+        } else if(supplies[i].type < 32)
+        {
+
+        } else if(supplies[i].type < 64)
+        {
+
+        } else if(supplies[i].type < 128)
+        {
+
+        } else if(supplies[i].type < 256)
+        {
+            
+        }
+        i++;
+    }
+}
 
 /**
  * @brief Player shoots
@@ -505,6 +636,10 @@ void moveBullets()
 /**
  * @brief Enemy: Check shot.
  * TODO: if(noOfSupplies = supplie.length) no supply
+ */
+
+/**
+ * @brief Bullet: Check if still in frame
  */
 
 /**
