@@ -58,6 +58,10 @@ typedef struct
     // invincible to 2, 4 or 8.
     byte invincible;
     byte bulletType;
+    byte bulletSpeed;
+    // The player cannot fire infinite bullets (and therefore stun the enemy).
+    byte bullets;
+    byte maxBullets;
 } Player;
 
 typedef struct
@@ -100,9 +104,9 @@ typedef struct
     boolean alive;
     boolean playersBullet;
     // Use 255 degrees, where 0 is right up, 45 is straight up, 45+180 straight
-    // down and 45+90 is to the left, etc.
+    // down and 45+90 is to the left, etc. 1 is used for the player's bullets.
     //              90      45      0
-    //            135      enemy
+    //            135      enemy    1
     //              180     225     255
     byte direction;
 } Bullet;
@@ -274,7 +278,8 @@ void drawStars()
  * @brief Generate random enemies with their strength based on the player's
  * score and the number of enemies on the screen. May generate nothing.
  * You may use this every second.
- * TODO: Get the size of the enemy.
+ * TODO: Get the size of the enemy which is the size of the bitmaps 
+ * for the types.
  */
 void generateEnemy()
 {
@@ -479,6 +484,7 @@ void moveBullets()
 
 /**
  * @brief Player moves
+ * TODO Check if moving and firing is possible. It should as far as I can see.
  */
 void movePlayer()
 {
@@ -516,45 +522,74 @@ void movePlayer()
 
 /**
  * @brief Enemies move
- * TODO: Alter the directions.
+ * TODO: Alter the directions. Check for speed. 
  */
 void moveEnemies()
 {
     for(int i=0; i<numberOfEnemies; i++)
     {
+        boolean blockedUP = false;
+        boolean blockedDOWN = false;
+        boolean blockedLEFT = false;
+        boolean blockedRIGHT = false;
+        
+        // Check for collisions.
+        for(int j=0; j<numberOfEnemies; j++)
+        {
+            if(j != i)
+            {
+                if(enemies[j].x == enemies[i].x-enemies[i].width)
+                {
+                    blockedLEFT = true;
+                }
+                if(enemies[i].x == enemies[j].x-enemies[j].width)
+                {
+                    blockedRIGHT = true;
+                }
+                if(enemies[j].y == enemies[i].y-enemies[i].height)
+                {
+                    blockedDOWN = true;
+                }
+                if(enemies[i].x == enemies[j].x-enemies[j].height)
+                {
+                    blockedUP = true;
+                }
+            }
+        }
+        
         //TODO Alter direction of enemy
         if(enemies[i].speed ...)
         switch(enemies[i].direction)
         {
-            // LEft and LEFT+UP
+            // UP and RIGHT+UP
             case 0:
-                enemies[i].x--;
+                if(!blockedRIGHT) enemies[i].x++;
             case 45:
-                enemies[i].y++;
+                if(!blockedUP) enemies[i].y++;
                 break;
                 
-            // UP+RIGHT
+            // UP+LEFT
             case 90:
-                enemies[i].x++;
-                enemies[i].y++;
+                if(!blockedLEFT) enemies[i].x--;
+                if(!blockedUP) enemies[i].y++;
                 break;
                 
             // Left and LEFT+DOWN
             case 180:
-                enemies[i].y--;
+                if(!blockedDOWN) enemies[i].y--;
             case 135:
-                enemies[i].x--;
+                if(!blockedLEFT) enemies[i].x--;
                 break;
                 
             // DOWN and DOWN+RIGHT
             case 255:
-                enemies[i].x++;
+                if(!blockedRIGHT) enemies[i].x++;
             case 225:
-                enemies[i].y--;
+                if(blockedDOWN) enemies[i].y--;
                 break;
                 
             default:
-                enemies[i].x--;
+                if(!blockedLEFT) enemies[i].x--;
         }
     }
 }
@@ -627,32 +662,136 @@ void enemiesShoot()
 
 /**
  * @brief Player shoots
+ * TODO Add a delay so the player cannot shoot too much at once maybe?
+ * Add different directions with different bullets.
  */
+void playerShoots()
+{
+    if(arduboy.getInput() & FIRE_BUTTON)
+    {
+        if(bullets.length < numberOfBullets 
+            && player.bullets < player.maxBullets)
+        {
+            Bullet b;
+            // A bullet should appear at front of the ship in the middle.
+            b.x = player.x + 1;
+            b.y = player.y - (height >> 1);
+            b.appearance = player.bulletType;
+            b.damage = player.bulletType;
+            b.speed = player.bulletSpeed;
+            b.alive = true;
+            b.playersBullet = true;
+            b.direction = 1;
+            numberOfBullets++;
+            player.bullets++;
+            bullets[numberOfBullets] = b;
+        }
+    }
+}
 
 /**
  * @brief Player: Check collision with bullet, enemy and supply.
  */
+void checkCollisionPlayer()
+{
+    for(int i=0; i<numberOfBullets; i++)
+    {
+        // First check if player and enemy collide on the x-coordinate
+        // and then on the y-coordinate. 
+        if((math.abs(bullets[i].x-player.x) < bullets.width 
+            || math.abs(player.x-bullets[i].x) < player.width)
+            && (math.abs(bullets[i].y-player.y) < bullets.height 
+            || math.abs(player.y-bullets[i].y) < player.height)
+            && bullets[i].playersBullet == false)
+        {
+            player.alive = false;
+            player.lives--:
+            bullets[i].alive = false;
+            numberOfBullets--;
+            return;
+        }
+    }
+    
+    for(int i=1; i<numberOfEnemies; i++)
+    {
+        if(math.abs(enemies[i].x-player.x) < enemies.width 
+            || math.abs(player.x-enemies[i].x) < player.width
+            || math.abs(enemies[i].y-player.x) < enemies.height 
+            || math.abs(player.y-enemies[i].y) < player.height)
+        {
+            player.alive = false;
+            player.lives--;
+            enemies[i].alive = false;
+            numberOfEnemies--;
+            return;
+        }
+    }
+}
 
 /**
  * @brief Enemy: Check shot.
  * TODO: if(noOfSupplies = supplie.length) no supply
  */
+void checkCollisionEnemy()
+{
+    
+}
+
+/**
+ * @brief Enemy: Check if still in frame
+ */
+void checkEnemiesInFrame()
+{
+    
+}
 
 /**
  * @brief Bullet: Check if still in frame
  */
+void checkBulletsInFrame()
+{
+    
+}
 
 /**
  * @brief Draw score
  */
+void drawScore()
+{
+    
+}
 
 /**
  * @brief Pause
  */
+void pause()
+{
+    
+}
 
 /**
  * @brief draw Pause
  */
+void drawPause()
+{
+    
+}
+
+/**
+ * @brief game over
+ */
+void gameOver()
+{
+    
+}
+
+/**
+ * @brief draw game over
+ */
+void drawGameOver()
+{
+    
+}
 
 /**
  * @brief Prints 'Hello World!', shows the intro and inits the seed for random
@@ -668,6 +807,9 @@ void setup()
     arduboy.initRandomSeed();
 }
 
+/**
+ * @brief TODO Check for alive player and set invincibility.
+ */
 void loop
 {
 
