@@ -29,16 +29,33 @@
  * Enter name and display highscore are taken from Sebastian Goscik as seen in
  * https://github.com/Arduboy/Arduboy/blob/master/examples/ArduBreakout/ArduBreakout.ino
  * and slightly modified.
+ * This code uses the old library of Arduboy and has been tested 
+ * with a Developer Kit.
  */
-
 #include "Arduboy.h"
+#include "SpaceFighter_bitmaps.h"
 
+// Define buttons.
 #define FIRE_BUTTON 1
 #define PAUSE_BUTTON 2
-#define DOWN 4
-#define RIGHT 8
+#define DOWN 64
+#define RIGHT 4
 #define UP 16
 #define LEFT 32
+// Define maximum amount of particles.
+#define MAXBULLETS 50
+#define MAXSTARS 25
+#define MAXENEMIES 10
+#define MAXSUPPLY 3
+// Define Movements
+#define MOVE_UP 45
+#define MOVE_UPLEFT 90
+#define MOVE_LEFT 135
+#define MOVE_DOWNLEFT 180
+#define MOVE_DOWN 225
+#define MOVE_DOWNRIGHT 255
+#define MOVE_RIGHT 1
+#define MOVE_UPRIGHT 0
 
 typedef struct
 {
@@ -62,6 +79,7 @@ typedef struct
     // The player cannot fire infinite bullets (and therefore stun the enemy).
     byte bullets;
     byte maxBullets;
+    byte speed; // Lower is better.
 } Player;
 
 typedef struct
@@ -81,6 +99,7 @@ typedef struct
     // the image, bullettype and speed. The highest 1 indicates the type
     // e.g. 0100 is the same type as 0111 or 0101 or 0110.
     byte shipType;
+    byte speed; // Lower is better.
     byte lifepoints;
     boolean alive;
     // Each number is a placeholder for another movement, e.g. straight-forward
@@ -126,36 +145,82 @@ typedef struct
 // measuring time.
 byte frameCounter;
 // The stars in the background are saved here.
-Star stars[20];
+Star stars[MAXSTARS];
 byte numberOfStars = 0;
 byte SCREEN_HEIGHT = 64;
 byte SCREEN_WIDTH = 128;
 Player player;
 Arduboy arduboy;
-Enemy enemies[10];
-byte numberOfEnemies;
-Bullet bullets[100];
+Enemy enemies[MAXENEMIES];
+byte numberOfEnemies = 0;
+Bullet bullets[MAXBULLETS];
 byte numberOfBullets;
-byte supplies[3];
+Supply supplies[MAXSUPPLY];
 byte noOfSupplies = 0;
+boolean gameStarted = false;
 
 /**
- * @brief Intro with wooosh - Arduboy.
+ * @brief Initialize player and enemies
  */
-void showIntro()
+void initGame()
 {
-    for(i = 0; i < 16; i++)
-    {
-        arduboy.clearDisplay();
-        // X, Y, name, width, height, color
-        arduboy.drawBitmap(0, 0, arduboyLogo, 128, 64, 1); 
-        arduboy.display();
-    }
+    initPlayer();
+    initEnemies();
+    initSupplies();
+    initBullets();
+}
 
-    arduboy.tunes.tone(987, 160);
-    delay(160);
-    arduboy.tunes.tone(1318, 400);
-    delay(2000);
+/**
+ * @brief Initialize the player's position, size etc.
+ */
+void initPlayer()
+{   
+    player.x = 0;
+    player.y = 0;
+    player.width = 14;
+    player.height = 14;
+    player.score = 0;
+    player.numberOfSuperbombs = 0;
+    player.invincible = 0;
+    player.bulletType = 1;
+    player.bulletSpeed = 0;
+    player.bullets = 0;
+    player.maxBullets = 3;
+    player.speed = 3; // Lower is better. 
+    player.alive = true;
+}
+
+/**
+ * @brief Kill all enemies for the beginning.
+ */
+void initEnemies()
+{
+    for(byte i=0; i<MAXENEMIES; i++)
+    {
+        enemies[i].alive=false;
+    }
+}
+
+/**
+ * @brief Destroy all supplies.
+ */
+void initBullets()
+{
+    for(byte i=0; i<MAXBULLETS; i++)
+    {
+        bullets[i].alive=false;
+    }
+}
+
+/**
+ * @brief Destroy all bullets.
+ */
+void initSupplies()
+{
+    for(byte i=0; i<MAXSUPPLY; i++)
+    {
+        supplies[i].alive=false;
+    }
 }
 
 /**
@@ -164,31 +229,41 @@ void showIntro()
  */
 void showTitle()
 {
-    for(i = 0; i < 16; i++)
+    while(true)
     {
         arduboy.clearDisplay();
         // X, Y, name, width, height, color
         arduboy.drawBitmap(0, 0, title, 128, 64, 1); 
         arduboy.display();
+        if(arduboy.pressed(FIRE_BUTTON) || arduboy.pressed(PAUSE_BUTTON))
+            break;
+        // delay(2000);
+        // arduboy.clearDisplay();
+        // arduboy.setCursor(2,25);
+        // arduboy.print("by Maicon Hieronymus"); 
+        // arduboy.display();
+        // if(arduboy.pressed(FIRE_BUTTON) || arduboy.pressed(PAUSE_BUTTON))
+           // break;
+        // delay(1000);
+        // if(arduboy.pressed(FIRE_BUTTON) || arduboy.pressed(PAUSE_BUTTON))
+            // break;
     }
+}
 
-    arduboy.tunes.tone(987, 160);
-    delay(160);
-    arduboy.tunes.tone(1318, 400);
-    delay(2000);
-    
-    for(i = 0; i < 16; i++)
-    {
-        arduboy.clearDisplay();
-        // X, Y, name, width, height, color
-        arduboy.drawBitmap(0, 0, author, 128, 64, 1); 
-        arduboy.display();
-    }
-    
-    arduboy.tunes.tone(987, 160);
-    delay(160);
-    arduboy.tunes.tone(1318, 400);
-    delay(2000);
+/*
+ * @brief Calls all necessary functions to generate the current display.
+ */
+void drawGame()
+{
+    arduboy.clearDisplay();
+    generateStar();
+    generateEnemy();
+    drawEnemies();
+    drawPlayer();
+    drawSupply();
+    drawBullets();
+    drawStars();
+    arduboy.display();
 }
 
 /**
@@ -201,47 +276,56 @@ void showTitle()
  */
 void showHighscore()
 {
-    byte y = 10;
-    byte x = 24;
-    // Each block of EEPROM has 10 high scores, and each high score entry
-    // is 5 bytes long:  3 bytes for initials and two bytes for score.
-    int address = 2*10*5;
-    byte hi, lo;
-    arduboy.clearDisplay();
-    arduboy.drawBitmap(0, 0, highscore, 128, 24, 1);
-    arduboy.display();
+    // byte y = 10;
+    // byte x = 24;
+    // // Each block of EEPROM has 10 high scores, and each high score entry
+    // // is 5 bytes long:  3 bytes for initials and two bytes for score.
+    // int address = 2*10*5;
+    // byte hi, lo;
+    // arduboy.clearDisplay();
+    // arduboy.drawBitmap(0, 0, highscore, 128, 24, 1);
+    // arduboy.display();
 
-    for(i=0; i<10; i++)
-    {
-        sprintf(text, "%2d", i+1);
-        arduboy.setCursor(x,y+(i*8));
-        arduboy.print(text);
-        arduboy.display();
-        hi = EEPROM.read(address + (5*i));
-        lo = EEPROM.read(address + (5*i) + 1);
+    // for(int i=0; i<10; i++)
+    // {
+        // sprintf(text, "%2d", i+1);
+        // arduboy.setCursor(x,y+(i*8));
+        // arduboy.print(text);
+        // arduboy.display();
+        // hi = EEPROM.read(address + (5*i));
+        // lo = EEPROM.read(address + (5*i) + 1);
 
-        if ((hi == 0xFF) && (lo == 0xFF))
-        {
-            score = 0;
-        }
-        else
-        {
-            score = (hi << 8) | lo;
-        }
+        // if ((hi == 0xFF) && (lo == 0xFF))
+        // {
+            // score = 0;
+        // }
+        // else
+        // {
+            // score = (hi << 8) | lo;
+        // }
 
-        initials[0] = (char)EEPROM.read(address + (5*i) + 2);
-        initials[1] = (char)EEPROM.read(address + (5*i) + 3);
-        initials[2] = (char)EEPROM.read(address + (5*i) + 4);
+        // initials[0] = (char)EEPROM.read(address + (5*i) + 2);
+        // initials[1] = (char)EEPROM.read(address + (5*i) + 3);
+        // initials[2] = (char)EEPROM.read(address + (5*i) + 4);
 
-        if (score > 0)
-        {
-            sprintf(text, "%c%c%c %u", initials[0], initials[1], initials[2], score);
-            arduboy.setCursor(x + 24, y + (i*8));
-            arduboy.print(text);
-            arduboy.display();
-        }
-    }
-    arduboy.display();
+        // if (score > 0)
+        // {
+            // sprintf(text, "%c%c%c %u", initials[0], initials[1], initials[2], score);
+            // arduboy.setCursor(x + 24, y + (i*8));
+            // arduboy.print(text);
+            // arduboy.display();
+        // }
+    // }
+    // arduboy.display();
+}
+
+/**
+ * @brief Draw the player in its current state.
+ * TODO: Check for current powerups and choose different ships.
+ */
+void drawPlayer()
+{
+    arduboy.drawBitmap(player.x, player.y, ship0, player.height, player.width, 1);
 }
 
 /**
@@ -249,15 +333,14 @@ void showHighscore()
  */
 void generateStar()
 {
-    int rand = random(1, 100);
-    
+    byte rand = random(1, 100); 
     // Make sure there are not too many stars.
-    if(rand<10 && numberOfStars < 20)
+    if(rand<5 && numberOfStars < MAXSTARS)
     {
-        star s;
+        Star s;
         s.x = SCREEN_WIDTH-1;
         // Create a y-coordinate between bottom and top.
-        s.y = random(0, SCREEN_HEIGHT);;
+        s.y = random(0, SCREEN_HEIGHT);
         stars[numberOfStars] = s;
         numberOfStars++;
     }
@@ -268,7 +351,7 @@ void generateStar()
  */
 void drawStars()
 {
-    for(int i=0; i<numberOfStars; i++)
+    for(byte i=0; i<numberOfStars; i++)
     {
         arduboy.drawPixel(stars[i].x, stars[i].y, 1);
     }
@@ -278,56 +361,64 @@ void drawStars()
  * @brief Generate random enemies with their strength based on the player's
  * score and the number of enemies on the screen. May generate nothing.
  * You may use this every second.
- * TODO: Get the size of the enemy which is the size of the bitmaps 
- * for the types.
+ * TODO: Check if the room is free to place the new enemy.
  */
 void generateEnemy()
 {
-    if(random(1, 9) > numberOfEnemies)
-    {
+    if(random(0, 4) > numberOfEnemies && numberOfEnemies <= MAXENEMIES) 
+    {   
         Enemy e;
-        e.x = SCREEN_WIDTH-1;
-        e.y = random(0, SCREEN_HEIGHT-1);
-        e.type = random(0, 8);
+        e.x = SCREEN_WIDTH;
+        e.y = random(10, SCREEN_HEIGHT-10);
+        e.shipType = random(0, 8); 
         e.lifepoints = random(1+player.destroyedShips, 10+player.destroyedShips);
         e.alive = true;
-        e.movement = random(0, 8);
-        if(random(0, 100) > 95)
+        e.direction = MOVE_LEFT; //random(0, 8)
+        e.movement = 0; // Straight line
+        if(random(0, 100) > 95 && MAXSUPPLY >= noOfSupplies)
         {
             e.supply = true;
         }
-        if(enemies[i].type < 2)
+        if(e.shipType < 2)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 4)
+            e.height = 7;
+            e.width = 8;
+            e.speed = 10;
+        } else if(e.shipType < 4)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 8)
+            e.height = 5;
+            e.width = 6;
+            e.speed = 2;
+        } else if(e.shipType < 8)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 16)
+            e.height = 7;
+            e.width = 8;
+            e.speed = 3;
+        } else if(e.shipType < 16)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 32)
+            e.height = 7;
+            e.width = 8;
+            e.speed = 10;
+        } else if(e.shipType < 32)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 64)
+            e.height = 5;
+            e.width = 6;
+            e.speed = 2;
+        } else if(e.shipType < 64)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 128)
+            e.height = 7;
+            e.width = 8;
+            e.speed = 3;
+        } else if(e.shipType < 128)
         {
-            e.height = ;
-            e.width = ;
-        } else if(enemies[i].type < 256)
+            e.height = 7;
+            e.width = 8;
+            e.speed = 5;
+        } else if(e.shipType < 256)
         {
-            e.height = ;
-            e.width = ;
+            e.height = 5;
+            e.width = 6;
+            e.speed = 2;
         }
         enemies[numberOfEnemies] = e;
         numberOfEnemies++;
@@ -340,35 +431,34 @@ void generateEnemy()
  */
 void drawEnemies()
 {
-    for(int i=0; i<numberOfEnemies; i++)
+    for(byte i=1; i<=numberOfEnemies; i++)
     {
-        if(enemies[i].type < 2)
+        if(enemies[i-1].shipType < 2)
         {
-            arduboy.drawBitmap(0, 0, enemy_00, 128, 64, 1);
-        } else if(enemies[i].type < 4)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 4)
         {
-            arduboy.drawBitmap(0, 0, enemy_01, 128, 64, 1);
-        } else if(enemies[i].type < 8)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy1, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 8)
         {
-            arduboy.drawBitmap(0, 0, enemy_02, 128, 64, 1);
-        } else if(enemies[i].type < 16)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy2, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 16)
         {
-            arduboy.drawBitmap(0, 0, enemy_03, 128, 64, 1);
-        } else if(enemies[i].type < 32)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 32)
         {
-            arduboy.drawBitmap(0, 0, enemy_04, 128, 64, 1);
-        } else if(enemies[i].type < 64)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy1, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 64)
         {
-            arduboy.drawBitmap(0, 0, enemy_05, 128, 64, 1);
-        } else if(enemies[i].type < 128)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy2, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 128)
         {
-            arduboy.drawBitmap(0, 0, enemy_06, 128, 64, 1);
-        } else if(enemies[i].type < 256)
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+        } else if(enemies[i-1].shipType < 256)
         {
-            arduboy.drawBitmap(0, 0, enemy_07, 128, 64, 1);
+            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y, enemy0, enemies[i-1].width, enemies[i-1].height, 1);
         }
     }
-    arduboy.display();
 }
 
 /**
@@ -392,33 +482,64 @@ void createSupply(byte x, byte y)
  */
 void drawSupply()
 {
-    for(int i=0; i<noOfSupplies; i++)
+    for(byte i=0; i<noOfSupplies; i++)
     {
         if(supplies[i].type < 2)
         {
-            arduboy.drawBitmap(0, 0, supply_00, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_00, 128, 64, 1);
         } else if(supplies[i].type < 4)
         {
-            arduboy.drawBitmap(0, 0, supply_01, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_01, 128, 64, 1);
         } else if(supplies[i].type < 8)
         {
-            arduboy.drawBitmap(0, 0, supply_02, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_02, 128, 64, 1);
         } else if(supplies[i].type < 16)
         {
-            arduboy.drawBitmap(0, 0, supply_03, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_03, 128, 64, 1);
         } else if(supplies[i].type < 32)
         {
-            arduboy.drawBitmap(0, 0, supply_04, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_04, 128, 64, 1);
         } else if(supplies[i].type < 64)
         {
-            arduboy.drawBitmap(0, 0, supply_05, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_05, 128, 64, 1);
         } else if(supplies[i].type < 128)
         {
-            arduboy.drawBitmap(0, 0, supply_06, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_06, 128, 64, 1);
         } else if(supplies[i].type < 256)
         {
-            arduboy.drawBitmap(0, 0, supply_07, 128, 64, 1);
+            // arduboy.drawBitmap(0, 0, supply_07, 128, 64, 1);
         }
+    }
+}
+
+/*
+ * @brief Bullets are 2x2 squares which are drawn in this function.
+ */
+void drawBullets()
+{
+    for(byte i=0; i<numberOfBullets; i++)
+    {
+        arduboy.drawPixel(bullets[i].x, bullets[i].y, 1);
+        arduboy.drawPixel(bullets[i].x-1, bullets[i].y, 1);
+        arduboy.drawPixel(bullets[i].x, bullets[i].y-1, 1);
+        arduboy.drawPixel(bullets[i].x-1, bullets[i].y-1, 1);
+    }
+}
+
+void moveGame()
+{
+    moveStars();
+//   moveSupplies();
+    moveBullets();
+    if(arduboy.everyXFrames(player.speed))
+    {
+        movePlayer();
+    }
+    moveEnemies();
+    if(arduboy.everyXFrames(10))
+    {
+        playerShoots();
+        // enemiesShoot();
     }
 }
 
@@ -427,7 +548,7 @@ void drawSupply()
  */
 void moveSupplies()
 {
-    for(int i; i<noOfSupplies; i++)
+    for(byte i; i<noOfSupplies; i++)
     {
         supplies[i].x++;
     }
@@ -439,83 +560,112 @@ void moveSupplies()
  */
 void moveBullets()
 {
-    for(int i=0; i<numberOfBullets; i++)
+    for(byte i=0; i<numberOfBullets; i++)
     {
-        if(bullets[i].speed ...)
         switch(bullets[i].direction)
         {
             case 0:
-                bullets[i].x--;
-                bullets[i].y++;
+                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
+                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
                 
             case 45:
-                bullets[i].y++;
+                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
                 
             case 90:
-                bullets[i].x++;
-                bullets[i].y++;
+                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
+                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
                 
             case 135:
-                bullets[i].x--;
+                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
                 break;
                 
             case 180:
-                bullets[i].x--;
-                bullets[i].y--;
+                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
+                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
                 
             case 225:
-                bullets[i].y--;
+                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
                 
             case 255:
-                bullets[i].x++;
-                bullets[i].y--;
+                bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
+                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
                 
             default:
-                bullets[i].x++;
+                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
         }
     }
 }
 
 /**
  * @brief Player moves
- * TODO Check if moving and firing is possible. It should as far as I can see.
  */
 void movePlayer()
 {
+    // byte input = arduboy.getInput();
     switch(arduboy.getInput())
     {
         case (LEFT + UP):
-            player.x--;
+        case (LEFT + UP + FIRE_BUTTON):
+        case (LEFT + UP + PAUSE_BUTTON):
+        case (LEFT + UP + FIRE_BUTTON + PAUSE_BUTTON):
+            if(player.x > 0)
+                player.x--;
         case UP:
-            player.y++;
+        case (UP + FIRE_BUTTON):
+        case (UP + PAUSE_BUTTON):
+        case (UP + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.y > 0)
+                player.y--;
             break;
             
         case (RIGHT + DOWN):
-            player.x++;
+        case (RIGHT + DOWN + FIRE_BUTTON):
+        case (RIGHT + DOWN + PAUSE_BUTTON):
+        case (RIGHT + DOWN + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.x+player.width < 127)
+                player.x++;
         case DOWN:
-            player.y--;
+        case (DOWN + FIRE_BUTTON):
+        case (DOWN + PAUSE_BUTTON):
+        case (DOWN + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.y+player.height < 63)
+                player.y++;
             break;
             
         case (DOWN + LEFT):
-            player.y--;
+        case (DOWN + LEFT + FIRE_BUTTON):
+        case (DOWN + LEFT + PAUSE_BUTTON):
+        case (DOWN + LEFT + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.y+player.height < 63)
+                player.y++;
         case LEFT:
-            player.x--;
+        case (LEFT + FIRE_BUTTON):
+        case (LEFT + PAUSE_BUTTON):
+        case (LEFT + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.x > 0)
+                player.x--;
             break;
             
         case (UP + RIGHT):
-            player.y++;
+        case (UP + RIGHT + FIRE_BUTTON):
+        case (UP + RIGHT + PAUSE_BUTTON):
+        case (UP + RIGHT + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.y > 0)
+                player.y--;
         case RIGHT:
-            player.x++;
+        case (RIGHT + FIRE_BUTTON):
+        case (RIGHT + PAUSE_BUTTON):
+        case (RIGHT + PAUSE_BUTTON + FIRE_BUTTON):
+            if(player.x+player.width < 127)
+                player.x++;
             break;
             
-        default:
-            // Do not change direction
     }
 }
 
@@ -526,70 +676,81 @@ void movePlayer()
  */
 void moveEnemies()
 {
-    for(int i=0; i<numberOfEnemies; i++)
+    for(byte i=1; i<=numberOfEnemies; i++)
     {
-        boolean blockedUP = false;
-        boolean blockedDOWN = false;
-        boolean blockedLEFT = false;
-        boolean blockedRIGHT = false;
-        
-        // Check for collisions.
-        for(int j=0; j<numberOfEnemies; j++)
+        if(arduboy.everyXFrames(enemies[i-1].speed))
         {
-            if(j != i)
+        
+            boolean blockedUP = false;
+            boolean blockedDOWN = false;
+            boolean blockedLEFT = false;
+            boolean blockedRIGHT = false;
+            
+            // Check for collisions.
+            for(byte j=1; j<=numberOfEnemies; j++)
             {
-                if(enemies[j].x == enemies[i].x-enemies[i].width)
+                if(j != i)
                 {
-                    blockedLEFT = true;
-                }
-                if(enemies[i].x == enemies[j].x-enemies[j].width)
-                {
-                    blockedRIGHT = true;
-                }
-                if(enemies[j].y == enemies[i].y-enemies[i].height)
-                {
-                    blockedDOWN = true;
-                }
-                if(enemies[i].x == enemies[j].x-enemies[j].height)
-                {
-                    blockedUP = true;
+                    if(enemies[j-1].x+enemies[j-1].width == enemies[i-1].x-1 &&
+                       (abs(enemies[j-1].y-enemies[i-1].y) < enemies[i-1].height 
+                       || abs(enemies[j-1].y-enemies[i-1].y) < enemies[j-1].height))
+                    {
+                        blockedLEFT = true;
+                    }
+                    if(enemies[j-1].x == enemies[i-1].x+1+enemies[i-1].width &&
+                       (abs(enemies[j-1].y-enemies[i-1].y) < enemies[i-1].height 
+                       || abs(enemies[j-1].y-enemies[i-1].y) < enemies[j-1].height))
+                    {
+                        blockedRIGHT = true;
+                    }
+                    if(enemies[j-1].y == enemies[i-1].y+1+enemies[i-1].height  &&
+                       (abs(enemies[j-1].x-enemies[i-1].x) < enemies[i-1].width 
+                       || abs(enemies[j-1].x-enemies[i-1].x) < enemies[j-1].width))
+                    {
+                        blockedDOWN = true;
+                    }
+                    if(enemies[j-1].y + enemies[j-1].height == enemies[i-1].y-1 &&
+                       (abs(enemies[j-1].x-enemies[i-1].x) < enemies[i-1].width 
+                       || abs(enemies[j-1].x-enemies[i-1].x) < enemies[j-1].width))
+                    {
+                        blockedUP = true;
+                    }
                 }
             }
-        }
-        
-        //TODO Alter direction of enemy
-        if(enemies[i].speed ...)
-        switch(enemies[i].direction)
-        {
-            // UP and RIGHT+UP
-            case 0:
-                if(!blockedRIGHT) enemies[i].x++;
-            case 45:
-                if(!blockedUP) enemies[i].y++;
-                break;
-                
-            // UP+LEFT
-            case 90:
-                if(!blockedLEFT) enemies[i].x--;
-                if(!blockedUP) enemies[i].y++;
-                break;
-                
-            // Left and LEFT+DOWN
-            case 180:
-                if(!blockedDOWN) enemies[i].y--;
-            case 135:
-                if(!blockedLEFT) enemies[i].x--;
-                break;
-                
-            // DOWN and DOWN+RIGHT
-            case 255:
-                if(!blockedRIGHT) enemies[i].x++;
-            case 225:
-                if(blockedDOWN) enemies[i].y--;
-                break;
-                
-            default:
-                if(!blockedLEFT) enemies[i].x--;
+            
+            //TODO Alter direction of enemy
+            switch(enemies[i-1].direction)
+            {
+                // UP and RIGHT+UP
+                case MOVE_UPRIGHT:
+                    if(!blockedRIGHT) enemies[i-1].x = enemies[i-1].x + 1;
+                case MOVE_UP:
+                    if(!blockedUP) enemies[i-1].y = enemies[i-1].y - 1;
+                    break;
+                    
+                // UP+LEFT
+                case MOVE_UPLEFT:
+                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
+                    if(!blockedUP) enemies[i-1].y = enemies[i-1].y - 1;
+                    break;
+                    
+                // Left and LEFT+DOWN
+                case MOVE_DOWNLEFT:
+                    if(!blockedDOWN) enemies[i-1].y = enemies[i-1].y + 1;
+                case MOVE_LEFT:
+                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
+                    break;
+                    
+                // DOWN and DOWN+RIGHT
+                case MOVE_DOWNRIGHT:
+                    if(!blockedRIGHT) enemies[i-1].x = enemies[i-1].x + 1;
+                case MOVE_DOWN:
+                    if(blockedDOWN) enemies[i-1].y = enemies[i-1].y + 1;
+                    break;
+                    
+                default:
+                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
+            }
         }
     }
 }
@@ -599,7 +760,7 @@ void moveEnemies()
  */
 void moveStars()
 {
-    for(int i=0; i<numberOfStars; i++)
+    for(byte i=0; i<numberOfStars; i++)
     {
         stars[i].x--;
     }
@@ -610,12 +771,13 @@ void moveStars()
  */
 void enemiesShoot()
 {
-    int i = 0;
-    while(numberOfBullets<bullets.length-1 && i<numberOfEnemies)
+    byte i = 0;
+
+    while(numberOfBullets<MAXBULLETS && i<numberOfEnemies)
     {
         //TODO Check if it is time for the enemy to shoot. Might depend on
-        // shiptype
-        if(enemies[i].type < 2)
+        // shiptype.
+        if(enemies[i].shipType < 2)
         {
             Bullet b;
             // Shoot the bullet up left from the enemy.
@@ -630,9 +792,9 @@ void enemiesShoot()
             b.damage = 0;
             b.speed = (player.destroyedShips << 3) + 2;
             b.alive = true;
-            playersBullet = false;
-            b.direction = 90
-            bullets[numberOfBullets] = b;
+            b.playersBullet = false;
+            b.direction = 90;
+            bullets[numberOfBullets-1] = b;
             numberOfBullets++;
         } else if(supplies[i].type < 4)
         {
@@ -667,26 +829,37 @@ void enemiesShoot()
  */
 void playerShoots()
 {
-    if(arduboy.getInput() & FIRE_BUTTON)
+    if( arduboy.getInput()%2 == FIRE_BUTTON)
     {
-        if(bullets.length < numberOfBullets 
+        if(MAXBULLETS > numberOfBullets 
             && player.bullets < player.maxBullets)
         {
             Bullet b;
             // A bullet should appear at front of the ship in the middle.
             b.x = player.x + 1;
-            b.y = player.y - (height >> 1);
+            b.y = player.y + (player.height >> 1);
             b.appearance = player.bulletType;
             b.damage = player.bulletType;
             b.speed = player.bulletSpeed;
             b.alive = true;
             b.playersBullet = true;
             b.direction = 1;
-            numberOfBullets++;
             player.bullets++;
             bullets[numberOfBullets] = b;
+            numberOfBullets++;
         }
     }
+}
+
+/**
+ * @brief Call all collision functions.
+ */
+void checkCollision()
+{
+    checkCollisionPlayer();
+    checkCollisionEnemy();
+    checkEnemiesInFrame();
+    checkBulletsInFrame();
 }
 
 /**
@@ -694,36 +867,41 @@ void playerShoots()
  */
 void checkCollisionPlayer()
 {
-    for(int i=0; i<numberOfBullets; i++)
+    boolean alreadyDead = false;
+    for(byte i=0; i<numberOfBullets; i++)
     {
-        // First check if player and enemy collide on the x-coordinate
+        // First check if player and enemy/bullet collide on the x-coordinate
         // and then on the y-coordinate. 
-        if((math.abs(bullets[i].x-player.x) < bullets.width 
-            || math.abs(player.x-bullets[i].x) < player.width)
-            && (math.abs(bullets[i].y-player.y) < bullets.height 
-            || math.abs(player.y-bullets[i].y) < player.height)
+        if((abs(player.x-bullets[i].x) < player.width 
+            && bullets[i].x >= player.x)
+            &&(abs(player.y-bullets[i].y) < player.height 
+            && bullets[i].y >= player.y)
             && bullets[i].playersBullet == false)
         {
             player.alive = false;
-            player.lives--:
+            if(!alreadyDead) 
+            {
+                player.lives--;
+                alreadyDead = true;
+            }
             bullets[i].alive = false;
-            numberOfBullets--;
-            return;
         }
     }
     
-    for(int i=1; i<numberOfEnemies; i++)
+    for(byte i=0; i<numberOfEnemies; i++)
     {
-        if(math.abs(enemies[i].x-player.x) < enemies.width 
-            || math.abs(player.x-enemies[i].x) < player.width
-            || math.abs(enemies[i].y-player.x) < enemies.height 
-            || math.abs(player.y-enemies[i].y) < player.height)
+        if((abs(enemies[i].x-player.x) < enemies[i].width 
+            || abs(player.x-enemies[i].x) < player.width)
+            &&( abs(enemies[i].y-player.y) < enemies[i].height 
+            || abs(player.y-enemies[i].y) < player.height))
         {
             player.alive = false;
-            player.lives--;
+            if(!alreadyDead) 
+            {
+                player.lives--;
+                alreadyDead = true;
+            }
             enemies[i].alive = false;
-            numberOfEnemies--;
-            return;
         }
     }
 }
@@ -734,7 +912,20 @@ void checkCollisionPlayer()
  */
 void checkCollisionEnemy()
 {
-    
+    for(byte i=0; i<numberOfEnemies; i++)
+    {
+        for(byte j=0; j<numberOfBullets; j++)
+        {
+            if((abs(enemies[i].x-bullets[j].x) < enemies[i].width 
+            && bullets[j].x >= enemies[i].x)
+            &&(abs(enemies[i].y-bullets[j].y) < enemies[i].height 
+            && bullets[j].y >= enemies[i].y))                                                          
+            {
+                bullets[j].alive = false;
+                enemies[i].alive = false;
+            }
+        }
+    }
 }
 
 /**
@@ -742,7 +933,13 @@ void checkCollisionEnemy()
  */
 void checkEnemiesInFrame()
 {
-    
+    for(byte i=0; i<numberOfEnemies; i++)
+    {
+        if(enemies[i].x > 128 || enemies[i].y > 64 || enemies[i].x == 0 || enemies[i].y == 0)
+        {
+            enemies[i].alive = false;
+        }
+    }
 }
 
 /**
@@ -750,7 +947,13 @@ void checkEnemiesInFrame()
  */
 void checkBulletsInFrame()
 {
-    
+    for(byte i=0; i<numberOfBullets; i++)
+    {
+        if(bullets[i].x > 128 || bullets[i].y > 64 || bullets[i].x == 0 || bullets[i].y == 0)
+        {
+            bullets[i].alive = false;
+        }
+    }
 }
 
 /**
@@ -794,23 +997,86 @@ void drawGameOver()
 }
 
 /**
- * @brief Prints 'Hello World!', shows the intro and inits the seed for random
- * numbers.
+ * @brief Destroy all dead objects.
  */
+void checkAlive()
+{
+    byte movedObjects = 1;
+    for(byte i=numberOfBullets-1; i>=0; i--)
+    {
+        if(!bullets[i].alive)
+        {
+            if(bullets[i].playersBullet)
+            {
+                player.bullets--;
+            }
+            if(i<numberOfBullets-movedObjects) 
+            {
+                bullets[i] = bullets[numberOfBullets-movedObjects];
+                movedObjects++;
+            } 
+            numberOfBullets--;
+        }
+    }
+    
+    movedObjects = 1;
+    for(byte i=numberOfEnemies-1; i>=0; i--)
+    {
+        if(!enemies[i].alive)
+        {
+            if(i<numberOfEnemies-movedObjects) 
+            {
+                enemies[i] = enemies[numberOfEnemies-movedObjects];
+                movedObjects++;
+            } 
+            numberOfEnemies--;
+        }
+    }
+    if(!player.alive)
+    {
+        gameStarted = false; // Alter it.
+    }
+}
+ 
 void setup()
 {
     arduboy.start();
     arduboy.setFrameRate(60);
-    arduboy.print("Hello World!");
-    arduboy.display();
-    showIntro();
+      // setRGBled(10,0,0);
+    for(int8_t y = -18; y<=24; y++) {
+        arduboy.clearDisplay();
+        arduboy.drawBitmap(20,y, arduboy_logo, 88, 16, WHITE);
+        arduboy.display();
+        delay(27);
+        // longer delay post boot, we put it inside the loop to
+        // save the flash calling clear/delay again outside the loop
+        if (y==-16) 
+        {
+            delay(250);
+        }
+    }
+    delay(750);
     arduboy.initRandomSeed();
 }
 
 /**
  * @brief TODO Check for alive player and set invincibility.
  */
-void loop
+void loop()
 {
-
+    // No rendering needed until the next frame is needed. Duh!
+    if(!(arduboy.nextFrame()))
+        return;
+    if(gameStarted)
+    {
+        drawGame();
+        moveGame();
+        checkCollision();
+        checkAlive();
+    } else
+    {
+        showTitle();
+        gameStarted = true;
+        initGame();
+    }
 }
