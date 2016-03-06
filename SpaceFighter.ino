@@ -108,6 +108,7 @@ typedef struct
     byte direction;
     // If true, create a random supply after destruction.
     boolean supply;
+    byte maxBullets;
 } Enemy;
 
 typedef struct
@@ -209,6 +210,7 @@ void initBullets()
     for(byte i=0; i<MAXBULLETS; i++)
     {
         bullets[i].alive=false;
+        bullets[i].playersBullet = false;
     }
 }
 
@@ -384,41 +386,49 @@ void generateEnemy()
             e.height = 7;
             e.width = 8;
             e.speed = 10;
+            e.maxBullets = 1;
         } else if(e.shipType < 4)
         {
             e.height = 5;
             e.width = 6;
             e.speed = 2;
+            e.maxBullets = 3;
         } else if(e.shipType < 8)
         {
             e.height = 7;
             e.width = 8;
             e.speed = 3;
+            e.maxBullets = 2;
         } else if(e.shipType < 16)
         {
             e.height = 7;
             e.width = 8;
             e.speed = 10;
+            e.maxBullets = 1;
         } else if(e.shipType < 32)
         {
             e.height = 5;
             e.width = 6;
             e.speed = 2;
+            e.maxBullets = 3;
         } else if(e.shipType < 64)
         {
             e.height = 7;
             e.width = 8;
             e.speed = 3;
+            e.maxBullets = 2;
         } else if(e.shipType < 128)
         {
             e.height = 7;
             e.width = 8;
-            e.speed = 5;
+            e.speed = 10;
+            e.maxBullets = 1;
         } else if(e.shipType < 256)
         {
             e.height = 5;
             e.width = 6;
             e.speed = 2;
+            e.maxBullets = 3;
         }
         enemies[numberOfEnemies] = e;
         numberOfEnemies++;
@@ -529,7 +539,7 @@ void drawBullets()
 void moveGame()
 {
     moveStars();
-//   moveSupplies();
+    moveSupplies();
     moveBullets();
     if(arduboy.everyXFrames(player.speed))
     {
@@ -539,8 +549,8 @@ void moveGame()
     if(arduboy.everyXFrames(10))
     {
         playerShoots();
-        // enemiesShoot();
     }
+    enemiesShoot();
 }
 
 /**
@@ -771,18 +781,18 @@ void moveStars()
  */
 void enemiesShoot()
 {
-    byte i = 0;
+    byte i = 1;
 
     while(numberOfBullets<MAXBULLETS && i<numberOfEnemies)
     {
         //TODO Check if it is time for the enemy to shoot. Might depend on
         // shiptype.
-        if(enemies[i].shipType < 2)
+        if(enemies[i-1].shipType < 2 && arduboy.everyXFrames(80))
         {
             Bullet b;
             // Shoot the bullet up left from the enemy.
-            b.x = enemies[i].x + 1;
-            b.y = enemies[i].y + 1;
+            b.x = enemies[i-1].x + 1;
+            b.y = enemies[i-1].y + 1;
             // Height and width depend on appearance which correlates to the
             // bitmap.
             b.appearance = 1;
@@ -793,28 +803,60 @@ void enemiesShoot()
             b.speed = (player.destroyedShips << 3) + 2;
             b.alive = true;
             b.playersBullet = false;
-            b.direction = 90;
+            b.direction = MOVE_LEFT;
             bullets[numberOfBullets-1] = b;
             numberOfBullets++;
-        } else if(supplies[i].type < 4)
+        } else if(enemies[i-1].shipType < 4 && arduboy.everyXFrames(20))
         {
-         // TODO   
-        } else if(supplies[i].type < 8)
+            Bullet b;
+            // Shoot the bullet up left from the enemy.
+            b.x = enemies[i-1].x + 1;
+            b.y = enemies[i-1].y + 1;
+            // Height and width depend on appearance which correlates to the
+            // bitmap.
+            b.appearance = 1;
+            b.height = 2;
+            b.width = 2;
+            // There are no lifepoints for the player. Every hit is a kill.
+            b.damage = 0;
+            b.speed = (player.destroyedShips << 3) + 2;
+            b.alive = true;
+            b.playersBullet = false;
+            b.direction = MOVE_LEFT;
+            bullets[numberOfBullets-1] = b;
+            numberOfBullets++;
+        } else if(enemies[i-1].shipType < 8 && arduboy.everyXFrames(450))
+        {
+            Bullet b;
+            // Shoot the bullet up left from the enemy.
+            b.x = enemies[i-1].x + 1;
+            b.y = enemies[i-1].y + 1;
+            // Height and width depend on appearance which correlates to the
+            // bitmap.
+            b.appearance = 1;
+            b.height = 2;
+            b.width = 2;
+            // There are no lifepoints for the player. Every hit is a kill.
+            b.damage = 0;
+            b.speed = (player.destroyedShips << 3) + 2;
+            b.alive = true;
+            b.playersBullet = false;
+            b.direction = MOVE_LEFT;
+            bullets[numberOfBullets-1] = b;
+            numberOfBullets++;
+        } else if(enemies[i-1].shipType < 16)
         {
 
-        } else if(supplies[i].type < 16)
+        } else if(enemies[i-1].shipType < 32)
         {
 
-        } else if(supplies[i].type < 32)
+        } else if(enemies[i-1].shipType < 64)
         {
 
-        } else if(supplies[i].type < 64)
+        } else if(enemies[i-1].shipType < 128)
         {
 
-        } else if(supplies[i].type < 128)
-        {
-
-        } else if(supplies[i].type < 256)
+        } else if(enemies[i-1].shipType < 256)
         {
             
         }
@@ -1002,14 +1044,15 @@ void drawGameOver()
 void checkAlive()
 {
     byte movedObjects = 1;
-    for(byte i=numberOfBullets-1; i>=0; i--)
+    // int is needed or else i <- 0-1 = 255
+    for(int i=numberOfBullets-1; i>=0; i--)
     {
         if(!bullets[i].alive)
         {
             if(bullets[i].playersBullet)
             {
                 player.bullets--;
-            }
+            } 
             if(i<numberOfBullets-movedObjects) 
             {
                 bullets[i] = bullets[numberOfBullets-movedObjects];
@@ -1020,7 +1063,7 @@ void checkAlive()
     }
     
     movedObjects = 1;
-    for(byte i=numberOfEnemies-1; i>=0; i--)
+    for(int i=numberOfEnemies-1; i>=0; i--)
     {
         if(!enemies[i].alive)
         {
