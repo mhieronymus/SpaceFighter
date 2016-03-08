@@ -70,9 +70,9 @@ typedef struct
     byte lives;
     boolean alive;
     byte numberOfSuperbombs;
-    // set invincible to 1 and then every two second a left-shift until 
+    // set invincible to 1 and then every two second a right-shift until 
     // invincible is zero. 
-    // This way you are 16 seconds invincible. Or less, if you set
+    // This way you are 2 seconds invincible. Or more, if you set
     // invincible to 2, 4 or 8.
     byte invincible;
     byte bulletType;
@@ -174,9 +174,9 @@ ArduboyTunes tunes;
 /**
  * @brief Initialize player and enemies
  */
-void initGame()
+void initGame(booelan newGame)
 {
-    initPlayer();
+    initPlayer(newGame);
     initEnemies();
     initSupplies();
     initBullets();
@@ -186,22 +186,24 @@ void initGame()
 /**
  * @brief Initialize the player's position, size etc.
  */
-void initPlayer()
+void initPlayer(boolean newGame)
 {   
     player.x = 0;
     player.y = 0;
     player.width = 14;
     player.height = 14;
-    player.score = 0;
+    if(newGame)
+        player.score = 0;
     player.numberOfSuperbombs = 0;
-    player.invincible = 0;
+    player.invincible = 1;
     player.bulletType = 1;
     player.bulletSpeed = 0;
     player.bullets = 0;
     player.maxBullets = 3;
     player.speed = 3; // Lower is better. 
     player.alive = true;
-    player.lives = 1;
+    if(newGame)
+        player.lives = 3;
 }
 
 /**
@@ -245,7 +247,7 @@ void initExplosions()
 {
     for(byte i=0; i<=MAXENEMIES; i++)
     {
-        explosions[i].tick=255;
+        explosions[i].tick=200;
     }
 }
 
@@ -709,6 +711,10 @@ void drawExplosions()
 
 void moveGame()
 {
+    if(arduboy.everyXFrames(120) && player.invincible != 0)
+    {
+        player.invincible >> 1;
+    }
     moveStars();
     moveSupplies();
     moveBullets();
@@ -1087,7 +1093,7 @@ void checkCollisionPlayer()
             && bullets[i].x >= player.x)
             &&(abs(player.y-bullets[i].y) < player.height-1
             && bullets[i].y >= player.y)
-            && !bullets[i].playersBullet)
+            && !bullets[i].playersBullet && player.invincible == 0)
         {
             player.alive = false;
             if(!alreadyDead) 
@@ -1107,7 +1113,6 @@ void checkCollisionPlayer()
                     arduboy.print(bullets[i].width);
                     arduboy.setCursor(32,40);
                     arduboy.print(bullets[i].height);
-                    
                     
                     arduboy.setCursor(64,0);
                     arduboy.print("PLAYER");
@@ -1132,7 +1137,8 @@ void checkCollisionPlayer()
         if(((enemies[i].x-player.x < player.width && enemies[i].x > player.x)
             || (player.x-enemies[i].x < enemies[i].width && enemies[i].x < player.x))
             && ((enemies[i].y-player.y < player.height && enemies[i].y > player.y)
-            || (player.y-enemies[i].y < enemies[i].height && enemies[i].y < player.y)))
+            || (player.y-enemies[i].y < enemies[i].height && enemies[i].y < player.y))
+            && player.invincible == 0)
         {
             player.alive = false;
             if(!alreadyDead) 
@@ -1575,13 +1581,15 @@ void loop()
             if(player.lives == 0)
             {
                 gameOver();
+            } else
+            {
+                initGame(false);
             }
-            // drawDead, check for gameover
         }
     } else
     {
         showTitle();
         gameStarted = true;
-        initGame();
+        initGame(true);
     }
 }
