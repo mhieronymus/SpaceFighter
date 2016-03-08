@@ -56,6 +56,7 @@
 #define MOVE_DOWNRIGHT 255
 #define MOVE_RIGHT 1
 #define MOVE_UPRIGHT 0
+#define DEBUG true
 
 typedef struct
 {
@@ -142,6 +143,14 @@ typedef struct
     byte type;
 } Supply;
 
+typedef struct
+{
+    byte x;
+    byte y;
+    byte tick; // Each tick is part of a different animation
+} Explosion;
+
+
 // Counter the frames. Every 60 frames is one second. This can be used for 
 // measuring time.
 byte frameCounter;
@@ -159,6 +168,8 @@ byte numberOfBullets;
 Supply supplies[MAXSUPPLY];
 byte noOfSupplies = 0;
 boolean gameStarted = false;
+Explosion explosions[MAXENEMIES+1];
+ArduboyTunes tunes;
 
 /**
  * @brief Initialize player and enemies
@@ -169,6 +180,7 @@ void initGame()
     initEnemies();
     initSupplies();
     initBullets();
+    initExplosions();
 }
 
 /**
@@ -189,6 +201,7 @@ void initPlayer()
     player.maxBullets = 3;
     player.speed = 3; // Lower is better. 
     player.alive = true;
+    player.lives = 1;
 }
 
 /**
@@ -226,20 +239,48 @@ void initSupplies()
 }
 
 /**
+ * @brief Stop all explosion animations.
+ */
+void initExplosions()
+{
+    for(byte i=0; i<=MAXENEMIES; i++)
+    {
+        explosions[i].tick=255;
+    }
+}
+
+/**
  * @brief Titlescreen with sound - SpaceFighter by me.
  * TODO: create nice music.
  */
 void showTitle()
 {
-    while(true)
+    boolean showingTitle = true;
+    while(showingTitle)
     {
         arduboy.clearDisplay();
         // X, Y, name, width, height, color
         arduboy.drawBitmap(0, 0, title, 128, 64, 1); 
         arduboy.display();
-        if(arduboy.pressed(FIRE_BUTTON) || arduboy.pressed(PAUSE_BUTTON))
-            break;
-        // delay(2000);
+        if(arduboy.pressed(PAUSE_BUTTON))
+            showingTitle = false;
+        if(arduboy.pressed(FIRE_BUTTON))
+        {
+            delay(200);
+            boolean showingHighscore = true;
+            showHighscore();
+            while(showingHighscore)
+            {
+                if(arduboy.pressed(PAUSE_BUTTON)) 
+                {
+                    showingTitle = false;
+                    showingHighscore = false;
+                }
+                if(arduboy.pressed(FIRE_BUTTON))
+                    showingHighscore = false;
+            }
+        }
+        delay(200);
         // arduboy.clearDisplay();
         // arduboy.setCursor(2,25);
         // arduboy.print("by Maicon Hieronymus"); 
@@ -265,6 +306,8 @@ void drawGame()
     drawSupply();
     drawBullets();
     drawStars();
+    drawScore();
+    drawExplosions();
     arduboy.display();
 }
 
@@ -278,47 +321,52 @@ void drawGame()
  */
 void showHighscore()
 {
-    // byte y = 10;
-    // byte x = 24;
-    // // Each block of EEPROM has 10 high scores, and each high score entry
-    // // is 5 bytes long:  3 bytes for initials and two bytes for score.
-    // int address = 2*10*5;
-    // byte hi, lo;
-    // arduboy.clearDisplay();
-    // arduboy.drawBitmap(0, 0, highscore, 128, 24, 1);
-    // arduboy.display();
+    byte y = 10;
+    byte x = 24;
+    byte score;
+    char initials[3]; 
+    char text[10]; 
+    
+    // Each block of EEPROM has 10 high scores, and each high score entry
+    // is 5 bytes long:  3 bytes for initials and two bytes for score.
+    int address = 2*10*5;
+    byte hi, lo;
+    arduboy.clearDisplay();
+    arduboy.setCursor(32, 0);
+    arduboy.print("HIGH SCORES");
+    arduboy.display();
 
-    // for(int i=0; i<10; i++)
-    // {
-        // sprintf(text, "%2d", i+1);
-        // arduboy.setCursor(x,y+(i*8));
-        // arduboy.print(text);
-        // arduboy.display();
-        // hi = EEPROM.read(address + (5*i));
-        // lo = EEPROM.read(address + (5*i) + 1);
+    for(byte i=0; i<10; i++)
+    {
+        sprintf(text, "%2d", i+1);
+        arduboy.setCursor(x,y+(i*8));
+        arduboy.print(text);
+        arduboy.display();
+        hi = EEPROM.read(address + (5*i));
+        lo = EEPROM.read(address + (5*i) + 1);
 
-        // if ((hi == 0xFF) && (lo == 0xFF))
-        // {
-            // score = 0;
-        // }
-        // else
-        // {
-            // score = (hi << 8) | lo;
-        // }
+        if ((hi == 0xFF) && (lo == 0xFF))
+        {
+            score = 0;
+        }
+        else
+        {
+            score = (hi << 8) | lo;
+        }
 
-        // initials[0] = (char)EEPROM.read(address + (5*i) + 2);
-        // initials[1] = (char)EEPROM.read(address + (5*i) + 3);
-        // initials[2] = (char)EEPROM.read(address + (5*i) + 4);
+        initials[0] = (char)EEPROM.read(address + (5*i) + 2);
+        initials[1] = (char)EEPROM.read(address + (5*i) + 3);
+        initials[2] = (char)EEPROM.read(address + (5*i) + 4);
 
-        // if (score > 0)
-        // {
-            // sprintf(text, "%c%c%c %u", initials[0], initials[1], initials[2], score);
-            // arduboy.setCursor(x + 24, y + (i*8));
-            // arduboy.print(text);
-            // arduboy.display();
-        // }
-    // }
-    // arduboy.display();
+        if (score > 0)
+        {
+            sprintf(text, "%c%c%c %u", initials[0], initials[1], initials[2], score);
+            arduboy.setCursor(x + 24, y + (i*8));
+            arduboy.print(text);
+            arduboy.display();
+        }
+    }
+    arduboy.display();
 }
 
 /**
@@ -367,7 +415,7 @@ void drawStars()
  */
 void generateEnemy()
 {
-    if(random(0, 4) > numberOfEnemies && numberOfEnemies <= MAXENEMIES) 
+    if(random(0, 4) > numberOfEnemies && numberOfEnemies <= MAXENEMIES && random(0,100) > 85) 
     {   
         Enemy e;
         e.x = SCREEN_WIDTH;
@@ -536,6 +584,129 @@ void drawBullets()
     }
 }
 
+/*
+ * @brief Draws an explosion for destroyed ships.
+ */
+void drawExplosions()
+{
+    // Not very efficiently...
+    for(byte i=0; i<=MAXENEMIES; i++)
+    {
+        if(explosions[i].tick < 15)
+        {
+            arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y, 1);
+            explosions[i].tick++;
+        } else if(explosions[i].tick < 30)
+        {
+            arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y, 1);
+            
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y, 1);
+            // diagonal lines
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y-1, 1);
+            
+            explosions[i].tick++;
+        } else if(explosions[i].tick < 45)
+        {
+            arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y, 1);
+            
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y, 1);
+            
+            // diagonal lines
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y-2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y-2, 1);
+            
+            explosions[i].tick++;
+        } else if(explosions[i].tick < 60)
+        {
+            arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y, 1);
+            
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+4, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-4, 1);
+            arduboy.drawPixel(explosions[i].x+4, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-4, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y, 1);
+            
+            // diagonal lines
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x+2, explosions[i].y-2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y+2, 1);
+            arduboy.drawPixel(explosions[i].x-2, explosions[i].y-2, 1);
+            
+            explosions[i].tick++;
+        } else if(explosions[i].tick < 75)
+        {
+            arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+1, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-1, 1);
+            arduboy.drawPixel(explosions[i].x+1, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-1, explosions[i].y, 1);
+            
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+4, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-4, 1);
+            arduboy.drawPixel(explosions[i].x+4, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-4, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y+5, 1);
+            arduboy.drawPixel(explosions[i].x, explosions[i].y-5, 1);
+            arduboy.drawPixel(explosions[i].x+5, explosions[i].y, 1);
+            arduboy.drawPixel(explosions[i].x-5, explosions[i].y, 1);
+            
+            // diagonal lines
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x+3, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y+3, 1);
+            arduboy.drawPixel(explosions[i].x-3, explosions[i].y-3, 1);
+            arduboy.drawPixel(explosions[i].x+4, explosions[i].y+4, 1);
+            arduboy.drawPixel(explosions[i].x+4, explosions[i].y-4, 1);
+            arduboy.drawPixel(explosions[i].x-4, explosions[i].y+4, 1);
+            arduboy.drawPixel(explosions[i].x-4, explosions[i].y-4, 1);
+            
+            explosions[i].tick++;
+        }
+    }
+}
+
 void moveGame()
 {
     moveStars();
@@ -588,7 +759,7 @@ void moveBullets()
                 bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
                 
-            case 135:
+            case MOVE_LEFT:
                 bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
                 break;
                 
@@ -605,7 +776,7 @@ void moveBullets()
                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
                 bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
-                
+            // MOVE_RIGHT
             default:
                  bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
         }
@@ -785,14 +956,12 @@ void enemiesShoot()
 
     while(numberOfBullets<MAXBULLETS && i<numberOfEnemies)
     {
-        //TODO Check if it is time for the enemy to shoot. Might depend on
-        // shiptype.
-        if(enemies[i-1].shipType < 2 && arduboy.everyXFrames(80))
+        if(enemies[i-1].shipType < 2 && arduboy.everyXFrames(120) && random(0,100) > 60)
         {
             Bullet b;
             // Shoot the bullet up left from the enemy.
             b.x = enemies[i-1].x + 1;
-            b.y = enemies[i-1].y + 1;
+            b.y = enemies[i-1].y + (enemies[i-1].height >> 1);
             // Height and width depend on appearance which correlates to the
             // bitmap.
             b.appearance = 1;
@@ -800,13 +969,13 @@ void enemiesShoot()
             b.width = 2;
             // There are no lifepoints for the player. Every hit is a kill.
             b.damage = 0;
-            b.speed = (player.destroyedShips << 3) + 2;
+            b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
             b.direction = MOVE_LEFT;
-            bullets[numberOfBullets-1] = b;
+            bullets[numberOfBullets] = b;
             numberOfBullets++;
-        } else if(enemies[i-1].shipType < 4 && arduboy.everyXFrames(20))
+        } else if(enemies[i-1].shipType < 4 && arduboy.everyXFrames(60) && random(0,100) > 70)
         {
             Bullet b;
             // Shoot the bullet up left from the enemy.
@@ -819,13 +988,13 @@ void enemiesShoot()
             b.width = 2;
             // There are no lifepoints for the player. Every hit is a kill.
             b.damage = 0;
-            b.speed = (player.destroyedShips << 3) + 2;
+            b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
             b.direction = MOVE_LEFT;
-            bullets[numberOfBullets-1] = b;
+            bullets[numberOfBullets] = b;
             numberOfBullets++;
-        } else if(enemies[i-1].shipType < 8 && arduboy.everyXFrames(450))
+        } else if(enemies[i-1].shipType < 8 && arduboy.everyXFrames(240) && random(0,100) > 50)
         {
             Bullet b;
             // Shoot the bullet up left from the enemy.
@@ -838,11 +1007,11 @@ void enemiesShoot()
             b.width = 2;
             // There are no lifepoints for the player. Every hit is a kill.
             b.damage = 0;
-            b.speed = (player.destroyedShips << 3) + 2;
+            b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
             b.direction = MOVE_LEFT;
-            bullets[numberOfBullets-1] = b;
+            bullets[numberOfBullets] = b;
             numberOfBullets++;
         } else if(enemies[i-1].shipType < 16)
         {
@@ -871,7 +1040,7 @@ void enemiesShoot()
  */
 void playerShoots()
 {
-    if( arduboy.getInput()%2 == FIRE_BUTTON)
+    if(arduboy.getInput()%2 == FIRE_BUTTON)
     {
         if(MAXBULLETS > numberOfBullets 
             && player.bullets < player.maxBullets)
@@ -885,7 +1054,7 @@ void playerShoots()
             b.speed = player.bulletSpeed;
             b.alive = true;
             b.playersBullet = true;
-            b.direction = 1;
+            b.direction = MOVE_RIGHT;
             player.bullets++;
             bullets[numberOfBullets] = b;
             numberOfBullets++;
@@ -914,17 +1083,45 @@ void checkCollisionPlayer()
     {
         // First check if player and enemy/bullet collide on the x-coordinate
         // and then on the y-coordinate. 
-        if((abs(player.x-bullets[i].x) < player.width 
+        if((abs(player.x-bullets[i].x) < player.width-3
             && bullets[i].x >= player.x)
-            &&(abs(player.y-bullets[i].y) < player.height 
+            &&(abs(player.y-bullets[i].y) < player.height-1
             && bullets[i].y >= player.y)
-            && bullets[i].playersBullet == false)
+            && !bullets[i].playersBullet)
         {
             player.alive = false;
             if(!alreadyDead) 
             {
                 player.lives--;
                 alreadyDead = true;
+                if(DEBUG)
+                {
+                    arduboy.clearDisplay();
+                    arduboy.setCursor(0,0);
+                    arduboy.print("BULLET");
+                    arduboy.setCursor(0,20);
+                    arduboy.print(bullets[i].x);
+                    arduboy.setCursor(0,40);
+                    arduboy.print(bullets[i].y);
+                    arduboy.setCursor(32,20);
+                    arduboy.print(bullets[i].width);
+                    arduboy.setCursor(32,40);
+                    arduboy.print(bullets[i].height);
+                    
+                    
+                    arduboy.setCursor(64,0);
+                    arduboy.print("PLAYER");
+                    arduboy.setCursor(64,20);
+                    arduboy.print(player.x);
+                    arduboy.setCursor(64,40);
+                    arduboy.print(player.y);
+                    arduboy.setCursor(96,20);
+                    arduboy.print(player.width);
+                    arduboy.setCursor(96,40);
+                    arduboy.print(player.height);
+                    
+                    arduboy.display();
+                }
             }
             bullets[i].alive = false;
         }
@@ -932,16 +1129,43 @@ void checkCollisionPlayer()
     
     for(byte i=0; i<numberOfEnemies; i++)
     {
-        if((abs(enemies[i].x-player.x) < enemies[i].width 
-            || abs(player.x-enemies[i].x) < player.width)
-            &&( abs(enemies[i].y-player.y) < enemies[i].height 
-            || abs(player.y-enemies[i].y) < player.height))
+        if(((enemies[i].x-player.x < player.width && enemies[i].x > player.x)
+            || (player.x-enemies[i].x < enemies[i].width && enemies[i].x < player.x))
+            && ((enemies[i].y-player.y < player.height && enemies[i].y > player.y)
+            || (player.y-enemies[i].y < enemies[i].height && enemies[i].y < player.y)))
         {
             player.alive = false;
             if(!alreadyDead) 
             {
                 player.lives--;
                 alreadyDead = true;
+                if(DEBUG)
+                {
+                    arduboy.clearDisplay();
+                    arduboy.setCursor(0,0);
+                    arduboy.print("ENEMY");
+                    arduboy.setCursor(0,20);
+                    arduboy.print(enemies[i].x);
+                    arduboy.setCursor(0,40);
+                    arduboy.print(enemies[i].y);
+                    arduboy.setCursor(32,20);
+                    arduboy.print(enemies[i].width);
+                    arduboy.setCursor(32,40);
+                    arduboy.print(enemies[i].height);
+                    
+                    arduboy.setCursor(64,0);
+                    arduboy.print("PLAYER");
+                    arduboy.setCursor(64,20);
+                    arduboy.print(player.x);
+                    arduboy.setCursor(64,40);
+                    arduboy.print(player.y);
+                    arduboy.setCursor(96,20);
+                    arduboy.print(player.width);
+                    arduboy.setCursor(96,40);
+                    arduboy.print(player.height);
+                    
+                    arduboy.display();
+                }
             }
             enemies[i].alive = false;
         }
@@ -961,10 +1185,12 @@ void checkCollisionEnemy()
             if((abs(enemies[i].x-bullets[j].x) < enemies[i].width 
             && bullets[j].x >= enemies[i].x)
             &&(abs(enemies[i].y-bullets[j].y) < enemies[i].height 
-            && bullets[j].y >= enemies[i].y))                                                          
+            && bullets[j].y >= enemies[i].y)
+            && bullets[j].playersBullet)                                                          
             {
                 bullets[j].alive = false;
                 enemies[i].alive = false;
+                player.score++;
             }
         }
     }
@@ -1003,23 +1229,49 @@ void checkBulletsInFrame()
  */
 void drawScore()
 {
-    
+    // We use this for debugging. Draw numberOfBullets:
+    arduboy.setCursor(110, 0);
+    arduboy.print(player.score);
+    if(DEBUG)
+    {
+       // arduboy.print(numberOfBullets);
+        byte test = 0;
+        for(byte i=0; i<numberOfBullets; i++)
+        {
+            if(bullets[i].alive)
+            {
+                test = test + 1;
+            }
+        }
+        arduboy.setCursor(70, 0);
+        arduboy.print(test);
+        arduboy.setCursor(3, 0);
+        arduboy.print(player.bullets);
+    }
 }
 
 /**
- * @brief Pause
- */
-void pause()
-{
-    
-}
-
-/**
- * @brief draw Pause
+ * @brief draw Pause. The Code is taken from ArduBreakout by Sebastian Goscik
+ * and has been modified.
  */
 void drawPause()
 {
-    
+    boolean paused = true;
+    //Draw pause to the screen
+    arduboy.setCursor(52, 45);
+    arduboy.print("PAUSE");
+    arduboy.display();
+    while(paused)
+    {
+        delay(200);
+        //Unpause if FIRE is pressed
+        if(arduboy.getInput() == PAUSE_BUTTON)
+        {
+            arduboy.fillRect(52, 45, 30, 11, 0);
+            paused=false;
+        }
+    }
+    delay(150);
 }
 
 /**
@@ -1027,7 +1279,9 @@ void drawPause()
  */
 void gameOver()
 {
-    
+    drawGameOver();
+    delay(4000);
+    enterHighScore(2);
 }
 
 /**
@@ -1035,7 +1289,188 @@ void gameOver()
  */
 void drawGameOver()
 {
-    
+    arduboy.setCursor(52, 42);
+    arduboy.print( "Game");
+    arduboy.setCursor(52, 54);
+    arduboy.print("Over");
+    arduboy.display();
+}
+
+/**
+ * @brief Function by nootropic design to add high scores. The Code is taken from ArduBreakout by Sebastian Goscik.
+ */
+void enterInitials()
+{
+    char index = 0;
+    char initials[3];
+    char text_buffer[10];
+
+    arduboy.clearDisplay();
+    initials[0] = ' ';
+    initials[1] = ' ';
+    initials[2] = ' ';
+    while (true)
+    {
+        arduboy.display();
+        arduboy.clearDisplay();
+
+        arduboy.setCursor(16,0);
+        arduboy.print("HIGH SCORE");
+        sprintf(text_buffer, "%u", player.score);
+        arduboy.setCursor(88, 0);
+        arduboy.print(text_buffer);
+        arduboy.setCursor(56, 20);
+        arduboy.print(initials[0]);
+        arduboy.setCursor(64, 20);
+        arduboy.print(initials[1]);
+        arduboy.setCursor(72, 20);
+        arduboy.print(initials[2]);
+        for(byte i = 0; i < 3; i++)
+        {
+            arduboy.drawLine(56 + (i*8), 27, 56 + (i*8) + 6, 27, 1);
+        }
+        arduboy.drawLine(56, 28, 88, 28, 0);
+        arduboy.drawLine(56 + (index*8), 28, 56 + (index*8) + 6, 28, 1);
+        delay(150);
+
+        if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(FIRE_BUTTON))
+        {
+            index--;
+            if (index < 0)
+            {
+                index = 0;
+            } 
+        }
+
+        if (arduboy.pressed(RIGHT_BUTTON))
+        {
+            index++;
+            if (index > 2)
+            {
+                index = 2;
+            }
+        }
+
+        if (arduboy.pressed(DOWN_BUTTON))
+        {
+            initials[index]++;
+            // A-Z 0-9 :-? !-/ ' '
+            if (initials[index] == '0')
+            {
+                initials[index] = ' ';
+            }
+            if (initials[index] == '!')
+            {
+                initials[index] = 'A';
+            }
+            if (initials[index] == '[')
+            {
+                initials[index] = '0';
+            }
+            if (initials[index] == '@')
+            {
+                initials[index] = '!';
+            }
+        }
+
+        if (arduboy.pressed(UP_BUTTON))
+        {
+            initials[index]--;
+            if (initials[index] == ' ') {
+                initials[index] = '?';
+            }
+            if (initials[index] == '/') {
+                initials[index] = 'Z';
+            }
+            if (initials[index] == 31) {
+                initials[index] = '/';
+            }
+            if (initials[index] == '@') {
+                initials[index] = ' ';
+            }
+        }
+
+        if (arduboy.pressed(PAUSE_BUTTON))
+        {
+            if (index < 2)
+            {
+                index++;
+            } else {
+                return;
+            }
+        }
+    }
+}
+
+/*
+ * @brief Enter HighScore. The Code is taken from ArduBreakout by Sebastian Goscik.
+ */
+void enterHighScore(byte file)
+{
+    // Each block of EEPROM has 10 high scores, and each high score entry
+    // is 5 bytes long:  3 bytes for initials and two bytes for score.
+    int address = file * 10 * 5;
+    byte hi, lo;
+    char tmpInitials[3];
+    char initials[3];
+    unsigned int tmpScore = 0;
+
+    // High score processing
+    for(byte i = 0; i < 10; i++)
+    {
+        hi = EEPROM.read(address + (5*i));
+        lo = EEPROM.read(address + (5*i) + 1);
+        if ((hi == 0xFF) && (lo == 0xFF))
+        {
+            // The values are uninitialized, so treat this entry
+            // as a score of 0.
+            tmpScore = 0;
+        } else
+        {
+            tmpScore = (hi << 8) | lo;
+        }
+        if (player.score > tmpScore)
+        {
+            enterInitials();
+            for(byte j=i;j<10;j++)
+            {
+                hi = EEPROM.read(address + (5*j));
+                lo = EEPROM.read(address + (5*j) + 1);
+
+                if ((hi == 0xFF) && (lo == 0xFF))
+                {
+                    tmpScore = 0;
+                }
+                else
+                {
+                    tmpScore = (hi << 8) | lo;
+                }
+
+                tmpInitials[0] = (char)EEPROM.read(address + (5*j) + 2);
+                tmpInitials[1] = (char)EEPROM.read(address + (5*j) + 3);
+                tmpInitials[2] = (char)EEPROM.read(address + (5*j) + 4);
+
+                // write score and initials to current slot
+                EEPROM.write(address + (5*j), ((player.score >> 8) & 0xFF));
+                EEPROM.write(address + (5*j) + 1, (player.score & 0xFF));
+                EEPROM.write(address + (5*j) + 2, initials[0]);
+                EEPROM.write(address + (5*j) + 3, initials[1]);
+                EEPROM.write(address + (5*j) + 4, initials[2]);
+
+                // tmpScore and tmpInitials now hold what we want to
+                //write in the next slot.
+                player.score = tmpScore;
+                initials[0] = tmpInitials[0];
+                initials[1] = tmpInitials[1];
+                initials[2] = tmpInitials[2];
+            }
+            player.score = 0;
+            initials[0] = ' ';
+            initials[1] = ' ';
+            initials[2] = ' ';
+            return;
+        }
+    }
 }
 
 /**
@@ -1067,6 +1502,20 @@ void checkAlive()
     {
         if(!enemies[i].alive)
         {
+            byte j=0;
+            if(enemies[i].x <= 128 && enemies[i].y <= 64 && enemies[i].x > 0 && enemies[i].y > 0)
+            {
+                for(byte j = 0; j <= MAXENEMIES; j++)
+                {
+                    if(explosions[j].tick >= 75)
+                    {
+                        explosions[j].tick = 0;
+                        explosions[j].x = enemies[i].x + (enemies[i].width >> 1);
+                        explosions[j].y = enemies[i].y + (enemies[i].height >> 1);
+                        j = 255;
+                    }
+                }
+           }
             if(i<numberOfEnemies-movedObjects) 
             {
                 enemies[i] = enemies[numberOfEnemies-movedObjects];
@@ -1116,6 +1565,19 @@ void loop()
         moveGame();
         checkCollision();
         checkAlive();
+        if(arduboy.getInput() == PAUSE_BUTTON)
+        { 
+            delay(200);
+            drawPause();
+        }
+        if(!gameStarted)
+        {
+            if(player.lives == 0)
+            {
+                gameOver();
+            }
+            // drawDead, check for gameover
+        }
     } else
     {
         showTitle();
