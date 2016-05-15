@@ -95,48 +95,58 @@ void generateEnemy()
         }
         if(e.shipType < 2)
         {
+            e.shipType = 1;
             e.height = 7;
             e.width = 8;
             e.speed = 10;
             e.maxBullets = 1;
         } else if(e.shipType < 4)
         {
+            e.shipType = 2;
             e.height = 5;
             e.width = 6;
             e.speed = 2;
             e.maxBullets = 3;
         } else if(e.shipType < 8)
         {
+            e.movement = 2;
+            e.direction = MOVE_DOWNLEFT;
+            e.shipType = 4;
             e.height = 7;
             e.width = 8;
             e.speed = 3;
             e.maxBullets = 2;
         } else if(e.shipType < 16)
         {
+            e.shipType = 8;
             e.height = 7;
             e.width = 8;
             e.speed = 10;
             e.maxBullets = 1;
         } else if(e.shipType < 32)
         {
+            e.shipType = 16;
             e.height = 5;
             e.width = 6;
             e.speed = 2;
             e.maxBullets = 3;
         } else if(e.shipType < 64)
         {
+            e.shipType = 32;
             e.height = 7;
             e.width = 8;
             e.speed = 3;
             e.maxBullets = 2;
         } else if(e.shipType < 128)
         {
+            e.shipType = 64;
             e.height = 7;
             e.width = 8;
             e.speed = 10;
             e.maxBullets = 1;
         } else if(e.shipType < 256)
         {
+            e.shipType = 128;
             e.height = 5;
             e.width = 6;
             e.speed = 2;

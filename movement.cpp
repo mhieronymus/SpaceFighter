@@ -140,6 +140,56 @@ void moveEnemies()
                 }
             }
             
+            // Ships of type 1 just move to the left.
+            // Default is just a safety thing. Move to the left in worst case.
+            switch(enemies[i-1].movement)
+            {
+                case 1:
+                    // Do not change the direction.
+                    break;
+                    
+                // Depending on the frame number. Go in circles (clockwise).
+                case 2:
+                    if(arduboy.everyXFrames(20)) 
+                    {
+                        if(enemies[i-1].direction == MOVE_DOWNLEFT)
+                        {
+                            enemies[i-1].direction = MOVE_UPLEFT;
+                        } else
+                        {
+                            enemies[i-1].direction = MOVE_DOWNLEFT;
+                        }
+                    }
+                    break;
+                    
+                case 4:
+                    
+                    break;
+                    
+                case 8:
+                    
+                    break;
+                    
+                case 16:
+                    
+                    break;
+                    
+                case 32:
+                    
+                    break;
+                
+                case 64:
+                    
+                    break;
+                    
+                case 128:
+                    
+                    break;
+                    
+                default:
+                    enemies[i-1].direction = MOVE_LEFT;
+            }
+            
             //TODO Alter direction of enemy
             switch(enemies[i-1].direction)
             {

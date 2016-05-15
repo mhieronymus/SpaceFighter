@@ -251,20 +251,6 @@ void setup()
 {
     arduboy.begin();
     arduboy.setFrameRate(60);
-      // setRGBled(10,0,0);
-    for(int8_t y = -18; y<=24; y++) {
-        arduboy.clear();
-      //  arduboy.drawBitmap(20,y, arduboy_logo, 88, 16, WHITE);
-        arduboy.display();
-        delay(27);
-        // longer delay post boot, we put it inside the loop to
-        // save the flash calling clear/delay again outside the loop
-        if (y==-16) 
-        {
-            delay(250);
-        }
-    }
-    delay(750);
     arduboy.initRandomSeed();
 }
 

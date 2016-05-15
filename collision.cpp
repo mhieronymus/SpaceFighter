@@ -9,10 +9,7 @@ void checkCollision()
 }
 
 void checkCollisionPlayer()
-{
-    text.setCursor(10,10);
-    text.print(player.invincible);
-    
+{    
     if(player.alive)
     {
         for(byte i=0; i<numberOfBullets; i++)

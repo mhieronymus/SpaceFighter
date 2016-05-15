@@ -43,15 +43,6 @@ void showTitle()
             }
         }
         delay(200);
-        // arduboy.clear();
-        // text.setCursor(2,25);
-        // text.print("by Maicon Hieronymus"); 
-        // arduboy.display();
-        // if(arduboy.pressed(B_BUTTON) || arduboy.pressed(A_BUTTON))
-           // break;
-        // delay(1000);
-        // if(arduboy.pressed(B_BUTTON) || arduboy.pressed(A_BUTTON))
-            // break;
     }
 }
 

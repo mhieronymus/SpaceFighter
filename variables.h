@@ -7,14 +7,14 @@
 #define MAXENEMIES 10
 #define MAXSUPPLY 3
 // Define Movements
-#define MOVE_UP 45
-#define MOVE_UPLEFT 90
-#define MOVE_LEFT 135
-#define MOVE_DOWNLEFT 180
-#define MOVE_DOWN 225
-#define MOVE_DOWNRIGHT 255
-#define MOVE_RIGHT 1
-#define MOVE_UPRIGHT 0
+#define MOVE_UP 0
+#define MOVE_UPLEFT 7
+#define MOVE_LEFT 6
+#define MOVE_DOWNLEFT 5
+#define MOVE_DOWN 4
+#define MOVE_DOWNRIGHT 3
+#define MOVE_RIGHT 2
+#define MOVE_UPRIGHT 1
 #define DEBUG false
 
 typedef struct
@@ -83,11 +83,10 @@ typedef struct
     byte speed;
     bool alive;
     bool playersBullet;
-    // Use 255 degrees, where 0 is right up, 45 is straight up, 45+180 straight
-    // down and 45+90 is to the left, etc. 1 is used for the player's bullets.
-    //              90      45      0
-    //            135      enemy    1
-    //              180     225     255
+    // Directions:
+    //              7      0      1
+    //            6      enemy    2
+    //              5     4     3
     byte direction;
 } Bullet;
 
