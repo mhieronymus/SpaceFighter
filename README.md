@@ -16,9 +16,10 @@ This game is still in development and there are a lot of bugs and missing featur
 * Initials for the highscore are messed up.
 * One ship is as fast as his bullets, therefore the bullet 'sticks' to the ship.
 * The sketch uses a lot of RAM and prevents the Arduino IDE to upload new sketches without starting the Arduboy in safe mode.
+* Player cannot shot. (Rarely)
 
 ### Missing features
-* Ships only fly a straight line instead of alternating the direction.
+* Ships only have limited movements.
 * Only one kind of bullet is available.
 * There are no upgrades for the ship.
 * There are no levels or at least alternations of enemies. They just spawn randomly.

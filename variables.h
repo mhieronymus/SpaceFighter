@@ -40,6 +40,8 @@ typedef struct
     byte bullets;
     byte maxBullets;
     byte speed; // Lower is better.
+    byte cooldown; // Shoot if cooldown == 0;
+    byte fireSpeed; // The lower, the faster you can fire.
 } Player;
 
 typedef struct
@@ -69,6 +71,7 @@ typedef struct
     // If true, create a random supply after destruction.
     bool supply;
     byte maxBullets;
+    byte tick; // Used for altering the direction.
 } Enemy;
 
 typedef struct
