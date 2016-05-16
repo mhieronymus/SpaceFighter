@@ -26,7 +26,7 @@ void initPlayer(bool newGame)
     player.speed = 2; // Lower is better. 
     player.alive = true;
     if(newGame)
-        player.lives = 3;
+        player.lives = 5;
     player.fireSpeed = 100;
     player.cooldown = 0;
 }
@@ -92,7 +92,7 @@ void generateEnemy()
         e.direction = MOVE_LEFT; //random(0, 8)
         e.movement = 0; // Straight line
         e.tick = 0;
-        if(random(0, 100) > 95 && MAXSUPPLY >= noOfSupplies)
+        if(random(0, 100) > 50 && MAXSUPPLY >= noOfSupplies)
         {
             e.supply = true;
         }

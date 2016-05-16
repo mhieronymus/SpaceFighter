@@ -61,9 +61,15 @@ void drawSupply();
 bool drawExplosions();
 
 /**
- * @brief Draw score
+ * @brief Draw score like this: Score: 100
  */
 void drawScore();
+
+/**
+ * @brief Draw the number of lives like this: symbol heart 5
+ * If there are only three or less lives left, draw three hearts.
+ */
+void drawLives();
 
 /**
  * @brief draw Pause. The Code is taken from ArduBreakout by Sebastian Goscik

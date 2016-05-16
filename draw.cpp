@@ -3,13 +3,14 @@
 bool drawGame()
 {
     arduboy.clear();
+    drawScore();
+    drawLives();
     drawEnemies();
     if(player.alive)
         drawPlayer();
     drawSupply();
     drawBullets();
     drawStars();
-    drawScore();
     bool finished = drawExplosions();
     arduboy.display();
     return finished;
@@ -154,32 +155,17 @@ void drawBullets()
 
 void drawSupply()
 {
+    
     for(byte i=0; i<noOfSupplies; i++)
     {
-        if(supplies[i].type < 2)
+        if(supplies[i].alive)
         {
-            // arduboy.drawBitmap(0, 0, supply_00, 128, 64, 1);
-        } else if(supplies[i].type < 4)
-        {
-            // arduboy.drawBitmap(0, 0, supply_01, 128, 64, 1);
-        } else if(supplies[i].type < 8)
-        {
-            // arduboy.drawBitmap(0, 0, supply_02, 128, 64, 1);
-        } else if(supplies[i].type < 16)
-        {
-            // arduboy.drawBitmap(0, 0, supply_03, 128, 64, 1);
-        } else if(supplies[i].type < 32)
-        {
-            // arduboy.drawBitmap(0, 0, supply_04, 128, 64, 1);
-        } else if(supplies[i].type < 64)
-        {
-            // arduboy.drawBitmap(0, 0, supply_05, 128, 64, 1);
-        } else if(supplies[i].type < 128)
-        {
-            // arduboy.drawBitmap(0, 0, supply_06, 128, 64, 1);
-        } else if(supplies[i].type < 256)
-        {
-            // arduboy.drawBitmap(0, 0, supply_07, 128, 64, 1);
+            arduboy.drawPixel(supplies[i].x, supplies[i].y, 1);
+            arduboy.drawPixel(supplies[i].x-1, supplies[i].y, 1);
+            arduboy.drawPixel(supplies[i].x+1, supplies[i].y, 1);
+            arduboy.drawPixel(supplies[i].x, supplies[i].y+1, 1);
+            arduboy.drawPixel(supplies[i].x, supplies[i].y-1, 1);
+            
         }
     }
 }
@@ -313,7 +299,8 @@ bool drawExplosions()
 
 void drawScore()
 {
-    // We use this for debugging. Draw numberOfBullets:
+    text.setCursor(70, 0);
+    text.print("Score:");
     text.setCursor(110, 0);
     text.print(player.score);
     if(DEBUG)
@@ -331,6 +318,53 @@ void drawScore()
         text.print(test);
         text.setCursor(3, 0);
         text.print(player.bullets);
+    }
+}
+
+void drawLives()
+{
+    // Draw multiple hearts.
+    if(player.lives < 4)
+    {
+        for(byte i=0; i<player.lives; i++)
+        {
+            arduboy.drawPixel(i*7+2, 1, 1);
+            arduboy.drawPixel(i*7+3, 1, 1);
+            arduboy.drawPixel(i*7+1, 0, 1);
+            arduboy.drawPixel(i*7+4, 0, 1);
+            arduboy.drawPixel(i*7, 1, 1);
+            arduboy.drawPixel(i*7+5, 1, 1);
+            arduboy.drawPixel(i*7, 2, 1);
+            arduboy.drawPixel(i*7+5, 2, 1);
+            arduboy.drawPixel(i*7+1, 3, 1);
+            arduboy.drawPixel(i*7+4, 3, 1);
+            arduboy.drawPixel(i*7+2, 4, 1);
+            arduboy.drawPixel(i*7+3, 4, 1);
+        }
+    } else
+    {
+        // Draw an heart.
+        arduboy.drawPixel(2, 1, 1);
+        arduboy.drawPixel(3, 1, 1);
+        arduboy.drawPixel(1, 0, 1);
+        arduboy.drawPixel(4, 0, 1);
+        arduboy.drawPixel(0, 1, 1);
+        arduboy.drawPixel(5, 1, 1);
+        arduboy.drawPixel(0, 2, 1);
+        arduboy.drawPixel(5, 2, 1);
+        arduboy.drawPixel(1, 3, 1);
+        arduboy.drawPixel(4, 3, 1);
+        arduboy.drawPixel(2, 4, 1);
+        arduboy.drawPixel(3, 4, 1);
+        // Draw a cross.
+        arduboy.drawPixel(7, 1, 1);
+        arduboy.drawPixel(8, 2, 1);
+        arduboy.drawPixel(9, 3, 1);
+        arduboy.drawPixel(7, 3, 1);
+        arduboy.drawPixel(9, 1, 1);
+        // Get the number of lives.
+        text.setCursor(11, 0);
+        text.print(player.lives);
     }
 }
 

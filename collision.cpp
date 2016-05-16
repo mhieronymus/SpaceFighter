@@ -1,4 +1,5 @@
 #include "collision.h"
+#include "generator.h"
 
 void checkCollision()
 {
@@ -56,6 +57,7 @@ void checkCollisionPlayer()
             }
         }
     }
+    // Only check this one if the player did not die due to a bullet.
     if(player.alive)
     {
         for(byte i=0; i<numberOfEnemies; i++)
@@ -100,6 +102,28 @@ void checkCollisionPlayer()
             }
         }
     }
+    // Check for supplies.
+    if(player.alive)
+    {
+        for(byte i=0; i<noOfSupplies; i++)
+        {
+            if((abs(player.x-supplies[i].x) < player.width
+                && supplies[i].x >= player.x)
+                &&(abs(player.y-supplies[i].y) < player.height-1
+                && supplies[i].y >= player.y))
+            {
+                supplies[i].alive = false;
+                switch(supplies[i].type)
+                {
+                    case 0:
+                        player.lives++;
+                        break;
+                    default:
+                        player.lives++;
+                }
+            }
+        }
+    }
 }
 
 void checkCollisionEnemy()
@@ -117,6 +141,10 @@ void checkCollisionEnemy()
                 bullets[j].alive = false;
                 enemies[i].alive = false;
                 player.score++;
+                if(enemies[i].supply && noOfSupplies < MAXSUPPLY)
+                {
+                    createSupply(enemies[i].x, enemies[i].y);
+                }
             }
         }
     }
