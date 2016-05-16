@@ -31,5 +31,5 @@ This game is still in development and there are a lot of bugs and missing featur
 ### Screenshots
 ![Title screen](docs/Title.JPG "Title screen")
 ![Screenshot 1](docs/Screen_1.JPG "Screenshot 1")
-![Screenshot 2](docs/Screen_1.JPG "Screenshot 2")
-![Screenshot 3](docs/Screen_1.JPG "Screenshot 3")
+![Screenshot 2](docs/Screen_2.JPG "Screenshot 2")
+![Screenshot 3](docs/Screen_3.JPG "Screenshot 3")
