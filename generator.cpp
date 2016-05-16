@@ -87,7 +87,6 @@ void generateEnemy()
         e.x = SCREEN_WIDTH;
         e.y = random(10, SCREEN_HEIGHT-10);
         byte rnd = random(0, 5);
-        rnd = 6;
         e.lifepoints = random(1+player.destroyedShips, 10+player.destroyedShips);
         e.alive = true;
         e.direction = MOVE_LEFT; //random(0, 8)
