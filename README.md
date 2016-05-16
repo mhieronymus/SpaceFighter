@@ -27,3 +27,9 @@ This game is still in development and there are a lot of bugs and missing featur
 * There are no different backgrounds.
 * There is no sound but there actually is no sound in space. I suppose it still counts as a missing feature.
 * The pace of the game needs calibration.
+
+### Screenshots
+![Title screen](docs/Title.JPG "Title screen")
+![Screenshot 1](docs/Screen_1.JPG "Screenshot 1")
+![Screenshot 2](docs/Screen_1.JPG "Screenshot 2")
+![Screenshot 3](docs/Screen_1.JPG "Screenshot 3")
