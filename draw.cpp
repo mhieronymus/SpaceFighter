@@ -60,15 +60,15 @@ void showHighscore()
     int address = 2*10*5;
     byte hi, lo;
     arduboy.clear();
-    text.setCursor(32, 0);
-    text.print("HIGH SCORES");
+    arduboy.setCursor(32, 0);
+    arduboy.print("HIGH SCORES");
     arduboy.display();
 
     for(byte i=0; i<10; i++)
     {
         sprintf(textArray, "%2d", i+1);
-        text.setCursor(x,y+(i*8));
-        text.print(textArray);
+        arduboy.setCursor(x,y+(i*8));
+        arduboy.print(textArray);
         arduboy.display();
         hi = EEPROM.read(address + (5*i));
         lo = EEPROM.read(address + (5*i) + 1);
@@ -89,8 +89,8 @@ void showHighscore()
         if (score > 0)
         {
             sprintf(textArray, "%c%c%c %u", initials[0], initials[1], initials[2], score);
-            text.setCursor(x + 24, y + (i*8));
-            text.print(textArray);
+            arduboy.setCursor(x + 24, y + (i*8));
+            arduboy.print(textArray);
             arduboy.display();
         }
     }
@@ -299,13 +299,13 @@ bool drawExplosions()
 
 void drawScore()
 {
-    text.setCursor(70, 0);
-    text.print("Score:");
-    text.setCursor(110, 0);
-    text.print(player.score);
+    arduboy.setCursor(70, 0);
+    arduboy.print("Score:");
+    arduboy.setCursor(110, 0);
+    arduboy.print(player.score);
     if(DEBUG)
     {
-       // text.print(numberOfBullets);
+       // arduboy.print(numberOfBullets);
         byte test = 0;
         for(byte i=0; i<numberOfBullets; i++)
         {
@@ -314,10 +314,10 @@ void drawScore()
                 test = test + 1;
             }
         }
-        text.setCursor(70, 0);
-        text.print(test);
-        text.setCursor(3, 0);
-        text.print(player.bullets);
+        arduboy.setCursor(70, 0);
+        arduboy.print(test);
+        arduboy.setCursor(3, 0);
+        arduboy.print(player.bullets);
     }
 }
 
@@ -363,8 +363,8 @@ void drawLives()
         arduboy.drawPixel(7, 3, 1);
         arduboy.drawPixel(9, 1, 1);
         // Get the number of lives.
-        text.setCursor(11, 0);
-        text.print(player.lives);
+        arduboy.setCursor(11, 0);
+        arduboy.print(player.lives);
     }
 }
 
@@ -372,8 +372,8 @@ void drawPause()
 {
     bool paused = true;
     //Draw pause to the screen
-    text.setCursor(52, 45);
-    text.print("PAUSE");
+    arduboy.setCursor(52, 45);
+    arduboy.print("PAUSE");
     arduboy.display();
     while(paused)
     {
@@ -390,9 +390,9 @@ void drawPause()
 
 void drawGameOver()
 {
-    text.setCursor(52, 42);
-    text.print( "Game");
-    text.setCursor(52, 54);
-    text.print("Over");
+    arduboy.setCursor(52, 42);
+    arduboy.print( "Game");
+    arduboy.setCursor(52, 54);
+    arduboy.print("Over");
     arduboy.display();
 }

@@ -122,7 +122,6 @@ extern byte SCREEN_HEIGHT;
 extern byte SCREEN_WIDTH;
 extern Player player;
 extern Arduboy arduboy;
-extern AbPrinter text;
 extern Enemy enemies[MAXENEMIES];
 extern byte numberOfEnemies;
 extern Bullet bullets[MAXBULLETS];

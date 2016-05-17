@@ -58,8 +58,6 @@ byte noOfSupplies = 0;
 bool gameStarted = false;
 Explosion explosions[MAXENEMIES+1];
 
-AbPrinter text(arduboy);
-
 /**
  * @brief game over
  */
@@ -88,17 +86,17 @@ void enterInitials()
         arduboy.display();
         arduboy.clear();
 
-        text.setCursor(16,0);
-        text.print("HIGH SCORE");
+        arduboy.setCursor(16,0);
+        arduboy.print("HIGH SCORE");
         sprintf(text_buffer, "%u", player.score);
-        text.setCursor(88, 0);
-        text.print(text_buffer);
-        text.setCursor(56, 20);
-        text.print(initials[0]);
-        text.setCursor(64, 20);
-        text.print(initials[1]);
-        text.setCursor(72, 20);
-        text.print(initials[2]);
+        arduboy.setCursor(88, 0);
+        arduboy.print(text_buffer);
+        arduboy.setCursor(56, 20);
+        arduboy.print(initials[0]);
+        arduboy.setCursor(64, 20);
+        arduboy.print(initials[1]);
+        arduboy.setCursor(72, 20);
+        arduboy.print(initials[2]);
         for(byte i = 0; i < 3; i++)
         {
             arduboy.drawLine(56 + (i*8), 27, 56 + (i*8) + 6, 27, 1);

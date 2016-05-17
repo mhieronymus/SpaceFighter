@@ -29,27 +29,27 @@ void checkCollisionPlayer()
                 if(DEBUG)
                 {
                     arduboy.clear();
-                    text.setCursor(0,0);
-                    text.print("BULLET");
-                    text.setCursor(0,20);
-                    text.print(bullets[i].x);
-                    text.setCursor(0,40);
-                    text.print(bullets[i].y);
-                    text.setCursor(32,20);
-                    text.print(bullets[i].width);
-                    text.setCursor(32,40);
-                    text.print(bullets[i].height);
+                    arduboy.setCursor(0,0);
+                    arduboy.print("BULLET");
+                    arduboy.setCursor(0,20);
+                    arduboy.print(bullets[i].x);
+                    arduboy.setCursor(0,40);
+                    arduboy.print(bullets[i].y);
+                    arduboy.setCursor(32,20);
+                    arduboy.print(bullets[i].width);
+                    arduboy.setCursor(32,40);
+                    arduboy.print(bullets[i].height);
                     
-                    text.setCursor(64,0);
-                    text.print("PLAYER");
-                    text.setCursor(64,20);
-                    text.print(player.x);
-                    text.setCursor(64,40);
-                    text.print(player.y);
-                    text.setCursor(96,20);
-                    text.print(player.width);
-                    text.setCursor(96,40);
-                    text.print(player.height);
+                    arduboy.setCursor(64,0);
+                    arduboy.print("PLAYER");
+                    arduboy.setCursor(64,20);
+                    arduboy.print(player.x);
+                    arduboy.setCursor(64,40);
+                    arduboy.print(player.y);
+                    arduboy.setCursor(96,20);
+                    arduboy.print(player.width);
+                    arduboy.setCursor(96,40);
+                    arduboy.print(player.height);
                     
                     arduboy.display();
                 }
@@ -74,27 +74,27 @@ void checkCollisionPlayer()
                 if(DEBUG)
                 {
                     arduboy.clear();
-                    text.setCursor(0,0);
-                    text.print("ENEMY");
-                    text.setCursor(0,20);
-                    text.print(enemies[i].x);
-                    text.setCursor(0,40);
-                    text.print(enemies[i].y);
-                    text.setCursor(32,20);
-                    text.print(enemies[i].width);
-                    text.setCursor(32,40);
-                    text.print(enemies[i].height);
+                    arduboy.setCursor(0,0);
+                    arduboy.print("ENEMY");
+                    arduboy.setCursor(0,20);
+                    arduboy.print(enemies[i].x);
+                    arduboy.setCursor(0,40);
+                    arduboy.print(enemies[i].y);
+                    arduboy.setCursor(32,20);
+                    arduboy.print(enemies[i].width);
+                    arduboy.setCursor(32,40);
+                    arduboy.print(enemies[i].height);
                     
-                    text.setCursor(64,0);
-                    text.print("PLAYER");
-                    text.setCursor(64,20);
-                    text.print(player.x);
-                    text.setCursor(64,40);
-                    text.print(player.y);
-                    text.setCursor(96,20);
-                    text.print(player.width);
-                    text.setCursor(96,40);
-                    text.print(player.height);
+                    arduboy.setCursor(64,0);
+                    arduboy.print("PLAYER");
+                    arduboy.setCursor(64,20);
+                    arduboy.print(player.x);
+                    arduboy.setCursor(64,40);
+                    arduboy.print(player.y);
+                    arduboy.setCursor(96,20);
+                    arduboy.print(player.width);
+                    arduboy.setCursor(96,40);
+                    arduboy.print(player.height);
                     
                     arduboy.display();
                 }
