@@ -1,7 +1,7 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include "Arduboy.h"
+#include <Arduboy2.h>
 #include "variables.h"
 #include "SpaceFighter_bitmaps.h"
 
@@ -18,7 +18,7 @@ bool drawGame();
 void showTitle();
 
 /**
- * @brief Display Highscore with the scores. 
+ * @brief Display Highscore with the scores.
  * This method is from Sebastian Goscik as seen in
  * https://github.com/Arduboy/Arduboy/blob/master/examples/ArduBreakout/ArduBreakout.ino
  * and slightly modified.
@@ -82,4 +82,4 @@ void drawPause();
  */
 void drawGameOver();
 
-#endif DRAW_H
+#endif 

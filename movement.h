@@ -1,7 +1,7 @@
 #ifndef MOVMENT_H
 #define MOVEMENT_H
 
-#include "Arduboy.h"
+#include <Arduboy2.h>
 #include "variables.h"
 
 /**
@@ -27,7 +27,7 @@ void movePlayer();
 
 /**
  * @brief Enemies move
- * TODO: Alter the directions. Check for speed. 
+ * TODO: Alter the directions. Check for speed.
  */
 void moveEnemies();
 
@@ -47,4 +47,4 @@ void enemiesShoot();
  * Add different directions with different bullets.
  */
 void playerShoots();
-#endif 
+#endif

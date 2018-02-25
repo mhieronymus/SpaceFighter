@@ -1,8 +1,8 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include "Arduboy.h"
-#include "variables.h" 
+#include <Arduboy2.h>
+#include "variables.h"
 #include "draw.h"
 
 /**

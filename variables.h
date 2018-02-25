@@ -29,8 +29,8 @@ typedef struct
     byte lives;
     bool alive;
     byte numberOfSuperbombs;
-    // set invincible to 1 and then every two second a right-shift until 
-    // invincible is zero. 
+    // set invincible to 1 and then every two second a right-shift until
+    // invincible is zero.
     // This way you are 2 seconds invincible. Or more, if you set
     // invincible to 2, 4 or 8.
     byte invincible;
@@ -112,7 +112,7 @@ typedef struct
 } Explosion;
 
 
-// Counter the frames. Every 60 frames is one second. This can be used for 
+// Counter the frames. Every 60 frames is one second. This can be used for
 // measuring time.
 extern byte frameCounter;
 // The stars in the background are saved here.
@@ -121,7 +121,7 @@ extern byte numberOfStars;
 extern byte SCREEN_HEIGHT;
 extern byte SCREEN_WIDTH;
 extern Player player;
-extern Arduboy arduboy;
+extern Arduboy2 arduboy;
 extern Enemy enemies[MAXENEMIES];
 extern byte numberOfEnemies;
 extern Bullet bullets[MAXBULLETS];
@@ -131,4 +131,4 @@ extern byte noOfSupplies;
 extern bool gameStarted;
 extern Explosion explosions[MAXENEMIES+1];
 
-#endif 
+#endif
