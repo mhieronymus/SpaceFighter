@@ -11,14 +11,11 @@ This game is still in development and there are a lot of bugs and missing featur
 (see below). I am going to tackle the bugs first if feasible and then add features.
 
 ### Known bugs
-* Explosions when the player dies are not drawn correctly
 * Explosions might occur when starting a new game
 * Collisions are calculated very poorly
 
 ### Missing features
 * Ships only have limited movements
-* Only one kind of bullet is available
-* There are no upgrades for the ship
 * There are no levels or at least alternations of enemies. They just spawn randomly
 * There are no boss battles
 * There are no different backgrounds
