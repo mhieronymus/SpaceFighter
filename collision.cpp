@@ -177,8 +177,10 @@ void checkCollisionEnemy() {
                 enemies[i].lifepoints--;
                 if(enemies[i].lifepoints == 0) enemies[i].alive = false;
                 player.score++;
-                if(enemies[i].supply && noOfSupplies < MAXSUPPLY) {
-                    createSupply(enemies[i].x, enemies[i].y);
+                if(enemies[i].supply && noOfSupplies < MAXSUPPLY 
+					&& !enemies[i].alive) {
+                    
+					createSupply(enemies[i].x, enemies[i].y);
                 }
             }
         }
