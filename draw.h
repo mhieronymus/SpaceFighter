@@ -54,6 +54,11 @@ void drawBullets();
  */
 void drawSupply();
 
+/**
+ * @brief Draw supply messages
+ */
+void drawExtra(byte type);
+
 /*
  * @brief Draws an explosion for destroyed ships.
  * @return: True if all explosions are finished.

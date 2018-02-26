@@ -89,6 +89,46 @@ void drawSupply() {
     }
 }
 
+void drawExtra(byte type) {
+	arduboy.setCursor(80, 20);
+	switch(type) {
+		case 0:
+			arduboy.print("Extra life");
+			break;
+		case 1:
+			if(player.speed > 1) 
+				arduboy.print("More speed");
+			break;
+		case 2:
+			if(player.fireSpeed > 10) 
+				arduboy.print("Shoot faster");
+			break;
+		case 3:
+			if(player.maxBullets < 5) 
+				arduboy.print("Spam bullets");
+			break;
+		case 4:
+			if(player.bulletSpeed < 4) 
+				arduboy.print("Faster bullets");
+			break;
+		case 5:
+			arduboy.print("Invincible!!!");
+			break;
+		case 6:
+			break;
+		case 7:
+			if(player.fireSpeed > 10) 
+				arduboy.print("Shoot faster");
+			break;
+		case 8:
+			if(player.firetype < 5) 
+				arduboy.print("Shoot nicer");
+			break;
+		default:
+			arduboy.print("Extra life");
+		}
+}
+
 bool drawExplosions() {
     bool finished = true;
     // Not very efficiently...
@@ -280,8 +320,7 @@ void drawPause() {
     arduboy.display();
     while(paused) {
         delay(200);
-        if(arduboy.pressed(B_BUTTON))
-        {
+        if(arduboy.pressed(B_BUTTON)) {
             arduboy.fillRect(52, 45, 30, 11, 0);
             paused=false;
         }

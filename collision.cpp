@@ -106,6 +106,54 @@ void checkCollisionPlayer() {
                     case 0:
                         player.lives++;
                         break;
+					case 1:
+                        if(player.speed > 1) {
+							player.speed--;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 2:
+                        if(player.fireSpeed > 10) {
+							player.fireSpeed -= 10;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 3:
+                        if(player.maxBullets < 20) {
+							player.maxBullets++;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 4:
+                        if(player.bulletSpeed < 4) {
+							player.bulletSpeed++;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 5:
+                        player.invincible = 16;
+                        break;
+					case 6:
+                        if(player.firetype < 4) {
+							player.firetype++;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 7:
+                        if(player.fireSpeed > 10) {
+							player.fireSpeed -= 10;
+						} else {
+							player.score += 5;
+						}
+                        break;
+					case 8:
+						player.score += 10;
+                        break;
                     default:
                         player.lives++;
                 }
@@ -157,23 +205,41 @@ void checkBulletsInFrame() {
     }
 }
 
+void checkSuppliesInFrame() {
+    for(byte i=0; i<noOfSupplies; i++) {
+        if(supplies[i].x > 128 || supplies[i].y > 64
+            || supplies[i].x == 0 || supplies[i].y == 0) {
+
+            supplies[i].alive = false;
+        }
+    }
+}
+
 void checkAlive() {
-    byte movedObjects = 1;
     // int is needed or else i <- 0-1 = 255
     for(int i=numberOfBullets-1; i>=0; i--) {
         if(!bullets[i].alive) {
-            if(bullets[i].playersBullet) {
+			// player.bullets should always be bigger than 0 if a player bullet is available...
+            if(bullets[i].playersBullet && player.bullets > 0) {
                 player.bullets--;
             }
-            if(i<numberOfBullets-movedObjects) {
-                bullets[i] = bullets[numberOfBullets-movedObjects];
-                movedObjects++;
+            if(i<numberOfBullets-1) {
+                bullets[i] = bullets[numberOfBullets-1];
             }
             numberOfBullets--;
         }
     }
-
-    movedObjects = 1;
+	
+    // int is needed or else i <- 0-1 = 255
+    for(int i=noOfSupplies-1; i>=0; i--) {
+        if(!supplies[i].alive) {
+            if(i<noOfSupplies-1) {
+                supplies[i] = supplies[noOfSupplies-1];
+            }
+            noOfSupplies--;
+        }
+    }
+	
     // For all enemies, if he is not alive, check if he is within the frame.
     for(int i=numberOfEnemies-1; i>=0; i--) {
         if(!enemies[i].alive) {
@@ -192,9 +258,8 @@ void checkAlive() {
                     }
                 }
            }
-            if(i<numberOfEnemies-movedObjects) {
-                enemies[i] = enemies[numberOfEnemies-movedObjects];
-                movedObjects++;
+            if(i<numberOfEnemies-1) {
+                enemies[i] = enemies[numberOfEnemies-1];
             }
             numberOfEnemies--;
         }

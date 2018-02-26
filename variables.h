@@ -39,6 +39,12 @@ typedef struct
     // The player cannot fire infinite bullets (and therefore stun the enemy).
     byte bullets;
     byte maxBullets;
+	// 0 is normal
+    // 1 is two at once 
+	// 2 is one straight and two up/down diagonal 
+	// 3 is two in the middle in addition
+    // 4 is two more diagonal
+	byte firetype; 
     byte speed; // Lower is better.
     byte cooldown; // Shoot if cooldown == 0;
     byte fireSpeed; // The lower, the faster you can fire.

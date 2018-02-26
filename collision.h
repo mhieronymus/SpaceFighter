@@ -31,7 +31,8 @@ void checkEnemiesInFrame();
 void checkBulletsInFrame();
 
 /**
- * @brief Destroy all dead objects.
+ * @brief Destroy all dead objects. Move the last object to the new 
+ * available slot.
  */
 void checkAlive();
 

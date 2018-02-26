@@ -6,7 +6,7 @@ void moveGame() {
     }
     if(arduboy.everyXFrames(2)) moveStars();
 
-    moveSupplies();
+    if(arduboy.everyXFrames(8)) moveSupplies();
     if(arduboy.everyXFrames(3)) moveBullets();
     if(player.alive && arduboy.everyXFrames(player.speed)) movePlayer();
 
@@ -19,23 +19,24 @@ void moveGame() {
 
 void moveSupplies() {
     for(byte i; i<noOfSupplies; i++) {
-        supplies[i].x++;
+		if(supplies[i].alive)
+			supplies[i].x--;
     }
 }
 
 void moveBullets() {
     for(byte i=0; i<numberOfBullets; i++) {
         switch(bullets[i].direction) {
-            case 0:
+            case MOVE_UPLEFT:
                 bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
                 bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
 
-            case 45:
+            case MOVE_UP:
                 bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
 
-            case 90:
+            case MOVE_UPRIGHT:
                  bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
                 bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
                 break;
@@ -44,16 +45,16 @@ void moveBullets() {
                 bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
                 break;
 
-            case 180:
+            case MOVE_DOWNLEFT:
                 bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
                 bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
 
-            case 225:
+            case MOVE_DOWN:
                 bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
 
-            case 255:
+            case MOVE_DOWNRIGHT:
                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
                 bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
                 break;
@@ -330,25 +331,165 @@ void enemiesShoot() {
     }
 }
 
-void playerShoots()
-{
+void playerShoots() {
     if(arduboy.pressed(B_BUTTON)) {
         if(MAXBULLETS > numberOfBullets
             && player.bullets < player.maxBullets) {
-            Bullet b;
-            // A bullet should appear at front of the ship in the middle.
-            b.x = player.x + 1;
-            b.y = player.y + (player.height >> 1);
-            b.appearance = player.bulletType;
-            b.damage = player.bulletType;
-            b.speed = player.bulletSpeed;
-            b.alive = true;
-            b.playersBullet = true;
-            b.direction = MOVE_RIGHT;
-            player.bullets++;
-            bullets[numberOfBullets] = b;
-            numberOfBullets++;
-            player.cooldown = player.fireSpeed;
+			
+			switch(player.firetype) {
+				case 0:
+					Bullet b;
+					// A bullet should appear at front of the ship in the middle.
+					b.x = player.x + 1;
+					b.y = player.y + (player.height >> 1);
+					b.appearance = player.bulletType;
+					b.damage = player.bulletType;
+					b.speed = player.bulletSpeed;
+					b.alive = true;
+					b.playersBullet = true;
+					b.direction = MOVE_RIGHT;
+					player.bullets++;
+					bullets[numberOfBullets] = b;
+					numberOfBullets++;
+					player.cooldown = player.fireSpeed;
+					break;
+				case 4:
+					Bullet b_2;
+					b_2.x = player.x + 1;
+					b_2.y = player.y + (player.height >> 1)+1;
+					b_2.appearance = player.bulletType;
+					b_2.damage = player.bulletType;
+					b_2.speed = player.bulletSpeed;
+					b_2.alive = true;
+					b_2.playersBullet = true;
+					b_2.direction = MOVE_UPRIGHT;
+					player.bullets++;
+					bullets[numberOfBullets] = b_2;
+					numberOfBullets++;
+					
+					if(MAXBULLETS > numberOfBullets) {
+						Bullet b_3;
+						b_3.x = player.x + 1;
+						b_3.y = player.y + (player.height >> 1)-1;
+						b_3.appearance = player.bulletType;
+						b_3.damage = player.bulletType;
+						b_3.speed = player.bulletSpeed;
+						b_3.alive = true;
+						b_3.playersBullet = true;
+						b_3.direction = MOVE_DOWNRIGHT;
+						player.bullets++;
+						bullets[numberOfBullets] = b_3;
+						numberOfBullets++;
+					}
+				case 3:
+					if(MAXBULLETS > numberOfBullets) {
+						Bullet b_2;
+						b_2.x = player.x + 1;
+						b_2.y = player.y + (player.height >> 1);
+						b_2.appearance = player.bulletType;
+						b_2.damage = player.bulletType;
+						b_2.speed = player.bulletSpeed;
+						b_2.alive = true;
+						b_2.playersBullet = true;
+						b_2.direction = MOVE_UPRIGHT;
+						player.bullets++;
+						bullets[numberOfBullets] = b_2;
+						numberOfBullets++;
+					}
+					if(MAXBULLETS > numberOfBullets) {
+						Bullet b_2;
+						b_2.x = player.x + 1;
+						b_2.y = player.y + (player.height >> 1);
+						b_2.appearance = player.bulletType;
+						b_2.damage = player.bulletType;
+						b_2.speed = player.bulletSpeed;
+						b_2.alive = true;
+						b_2.playersBullet = true;
+						b_2.direction = MOVE_DOWNRIGHT;
+						player.bullets++;
+						bullets[numberOfBullets] = b_2;
+						numberOfBullets++;
+					}
+				case 1:
+					for(byte i=0; i<2; i++) {
+						if(MAXBULLETS > numberOfBullets) {
+							Bullet b;
+							b.x = player.x + 1;
+							b.y = player.y + (player.height >> 1)-1+2*i;
+							b.appearance = player.bulletType;
+							b.damage = player.bulletType;
+							b.speed = player.bulletSpeed;
+							b.alive = true;
+							b.playersBullet = true;
+							b.direction = MOVE_RIGHT;
+							player.bullets++;
+							bullets[numberOfBullets] = b;
+							numberOfBullets++;
+							player.cooldown = player.fireSpeed;
+						}
+					}
+					break;
+				case 2:
+					Bullet b_4;
+					b_4.x = player.x + 1;
+					b_4.y = player.y + (player.height >> 1);
+					b_4.appearance = player.bulletType;
+					b_4.damage = player.bulletType;
+					b_4.speed = player.bulletSpeed;
+					b_4.alive = true;
+					b_4.playersBullet = true;
+					b_4.direction = MOVE_RIGHT;
+					player.bullets++;
+					bullets[numberOfBullets] = b_4;
+					numberOfBullets++;
+					player.cooldown = player.fireSpeed;
+					if(MAXBULLETS > numberOfBullets) {
+						Bullet b_2;
+						b_2.x = player.x + 1;
+						b_2.y = player.y + (player.height >> 1);
+						b_2.appearance = player.bulletType;
+						b_2.damage = player.bulletType;
+						b_2.speed = player.bulletSpeed;
+						b_2.alive = true;
+						b_2.playersBullet = true;
+						b_2.direction = MOVE_UPRIGHT;
+						player.bullets++;
+						bullets[numberOfBullets] = b_2;
+						numberOfBullets++;
+					}
+					
+					if(MAXBULLETS > numberOfBullets) {
+						Bullet b_2;
+						b_2.x = player.x + 1;
+						b_2.y = player.y + (player.height >> 1);
+						b_2.appearance = player.bulletType;
+						b_2.damage = player.bulletType;
+						b_2.speed = player.bulletSpeed;
+						b_2.alive = true;
+						b_2.playersBullet = true;
+						b_2.direction = MOVE_DOWNRIGHT;
+						player.bullets++;
+						bullets[numberOfBullets] = b_2;
+						numberOfBullets++;
+					}
+					break;
+				
+				default:
+					Bullet b_5;
+					// A bullet should appear at front of the ship in the middle.
+					b_5.x = player.x + 1;
+					b_5.y = player.y + (player.height >> 1);
+					b_5.appearance = player.bulletType;
+					b_5.damage = player.bulletType;
+					b_5.speed = player.bulletSpeed;
+					b_5.alive = true;
+					b_5.playersBullet = true;
+					b_5.direction = MOVE_RIGHT;
+					player.bullets++;
+					bullets[numberOfBullets] = b_5;
+					numberOfBullets++;
+					player.cooldown = player.fireSpeed;
+			}
         }
     }
 }

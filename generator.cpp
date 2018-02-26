@@ -21,12 +21,14 @@ void initPlayer(bool newGame) {
     player.bulletSpeed = 1;
     player.bullets = 0;
     player.maxBullets = 2;
-    player.speed = 2; // Lower is better.
+	if(newGame)
+		player.speed = 2; // Lower is better.
     player.alive = true;
     if(newGame)
         player.lives = 5;
     player.fireSpeed = 100;
     player.cooldown = 0;
+	player.firetype = 0;
 }
 
 void initEnemies() {
@@ -69,17 +71,19 @@ void generateStar() {
 
 void generateEnemy() {
     if(random(0, 4) > numberOfEnemies
-    && numberOfEnemies < MAXENEMIES && random(0,100) > 85)  {
+		&& numberOfEnemies < MAXENEMIES && random(0,100) > 85)  {
+			
         Enemy e;
         e.x = SCREEN_WIDTH;
         e.y = random(10, SCREEN_HEIGHT-10);
         byte rnd = random(0, 5);
-        e.lifepoints = random(1+player.destroyedShips, 10+player.destroyedShips);
+        e.lifepoints = random(1, 1+player.destroyedShips);
         e.alive = true;
         e.direction = MOVE_LEFT; //random(0, 8)
         e.movement = 0; // Straight line
         e.tick = 0;
-        if(random(0, 100) > 50 && MAXSUPPLY >= noOfSupplies) {
+		// random(0, 100) > 50 && 
+        if(MAXSUPPLY >= noOfSupplies) {
             e.supply = true;
         }
         if(rnd == 0) {
@@ -157,5 +161,6 @@ void createSupply(byte x, byte y) {
     s.type = random(0,8);
     s.alive = true;
     supplies[noOfSupplies] = s;
+	noOfSupplies++;
     drawSupply();
 }
