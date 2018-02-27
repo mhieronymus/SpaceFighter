@@ -19,12 +19,12 @@ void checkCollisionPlayer() {
                 && bullets[i].y >= player.y)
                 && !bullets[i].playersBullet && player.invincible == 0) {
                 if(bullets[i].damage >= player.lifepoints) {
-					player.alive = false;
-					player.lives--;
-					bullets[i].alive = false;
-					break;
-				}
-				player.lifepoints -= bullets[i].damage;
+                    player.alive = false;
+                    player.lives--;
+                    bullets[i].alive = false;
+                    break;
+                }
+                player.lifepoints -= bullets[i].damage;
                 bullets[i].alive = false;
             }
         }
@@ -58,53 +58,53 @@ void checkCollisionPlayer() {
                     case 0:
                         player.lives++;
                         break;
-					case 1:
+                    case 1:
                         if(player.speed < 2) {
-							player.speed++;
-						} else {
-							player.score += 5;
-						}
+                                player.speed++;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 2:
+                    case 2:
                         if(player.fireSpeed > 10) {
-							player.fireSpeed -= 10;
-						} else {
-							player.score += 5;
-						}
+                                player.fireSpeed -= 10;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 3:
+                    case 3:
                         if(player.maxBullets < 20) {
-							player.maxBullets++;
-						} else {
-							player.score += 5;
-						}
+                                player.maxBullets++;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 4:
+                    case 4:
                         if(player.bulletSpeed < 4) {
-							player.bulletSpeed++;
-						} else {
-							player.score += 5;
-						}
+                                player.bulletSpeed++;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 5:
+                    case 5:
                         player.invincible = 16;
                         break;
-					case 6:
+                    case 6:
                         if(player.firetype < 4) {
-							player.firetype++;
-						} else {
-							player.score += 5;
-						}
+                                player.firetype++;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 7:
+                    case 7:
                         if(player.fireSpeed > 10) {
-							player.fireSpeed -= 10;
-						} else {
-							player.score += 5;
-						}
+                                player.fireSpeed -= 10;
+                        } else {
+                                player.score += 5;
+                        }
                         break;
-					case 8:
-						player.score += 10;
+                    case 8:
+                        player.score += 10;
                         break;
                     default:
                         player.lives++;
@@ -120,7 +120,7 @@ void checkCollisionEnemy() {
     for(byte i=0; i<numberOfEnemies; i++) {
         for(byte j=0; j<numberOfBullets; j++) {
             if(bullets[j].playersBullet
-				&& (abs(enemies[i].x-bullets[j].x) < enemies[i].width
+                && (abs(enemies[i].x-bullets[j].x) < enemies[i].width
                 && bullets[j].x >= enemies[i].x)
                 &&(abs(enemies[i].y-bullets[j].y) < enemies[i].height
                 && bullets[j].y >= enemies[i].y)) {
@@ -130,9 +130,9 @@ void checkCollisionEnemy() {
                 if(enemies[i].lifepoints == 0) enemies[i].alive = false;
                 player.score++;
                 if(enemies[i].supply && noOfSupplies < MAXSUPPLY 
-					&& !enemies[i].alive) {
-                    
-					createSupply(enemies[i].x, enemies[i].y);
+                    && !enemies[i].alive) {
+
+                    createSupply(enemies[i].x, enemies[i].y);
                 }
             }
         }
@@ -173,7 +173,7 @@ void checkAlive() {
     // int is needed or else i <- 0-1 = 255
     for(int i=numberOfBullets-1; i>=0; i--) {
         if(!bullets[i].alive) {
-			// player.bullets should always be bigger than 0 if a player bullet is available...
+            // player.bullets should always be bigger than 0 if a player bullet is available...
             if(bullets[i].playersBullet && player.bullets > 0) {
                 player.bullets--;
             }

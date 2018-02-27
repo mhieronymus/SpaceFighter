@@ -85,69 +85,69 @@ void generateEnemy() {
         if(random(0, 100) > 75 && MAXSUPPLY >= noOfSupplies) {
             e.supply = true;
         }
-		switch(rnd) {
-			case 0:
-				e.movement = 4;
-				e.shipType = 1;
-				e.height = 7;
-				e.width = 8;
-				e.speed = 7;
-				e.lifepoints = random(5, 5+player.destroyedShips);
-				break;
-			case 1:
-				e.movement = 8;
-				e.shipType = 2;
-				e.height = 5;
-				e.width = 6;
-				e.speed = 4;
-				e.lifepoints = 1;
-				break;
-			case 2:
-				e.movement = 2;
-				e.direction = MOVE_DOWNLEFT;
-				e.shipType = 4;
-				e.height = 7;
-				e.width = 8;
-				e.speed = 5;
-				e.lifepoints = 2;
-				break;
-			case 3:
-				e.shipType = 8;
-				e.height = 5;
-				e.width = 4;
-				e.speed = 1; 
-				e.lifepoints = 1;
-				break;
-			case 4:
-				e.movement = 8;
-				e.shipType = 16;
-				e.height = 8;
-				e.width = 5;
-				e.speed = 3;
-				e.lifepoints = 2;
-				break;
-			case 5:
-				e.shipType = 32;
-				e.height = 7;
-				e.width = 8;
-				e.speed = 1;//
-				e.lifepoints = 2;
-				break;
-			case 6:
-				e.movement = 16;
-				e.shipType = 64;
-				e.height = 7;
-				e.width = 8;
-				e.speed = 1;//
-				e.lifepoints = 1;
-				break;
-			default:
-				e.shipType = 128;
-				e.height = 5;
-				e.width = 6;
-				e.speed = 1;//
-				e.lifepoints = 8;
-				break;
+        switch(rnd) {
+            case 0:
+                e.movement = 4;
+                e.shipType = 1;
+                e.height = 7;
+                e.width = 8;
+                e.speed = 7;
+                e.lifepoints = random(5, 5+player.destroyedShips);
+                break;
+            case 1:
+                e.movement = 8;
+                e.shipType = 2;
+                e.height = 5;
+                e.width = 6;
+                e.speed = 4;
+                e.lifepoints = 1;
+                break;
+            case 2:
+                e.movement = 2;
+                e.direction = MOVE_DOWNLEFT;
+                e.shipType = 4;
+                e.height = 7;
+                e.width = 8;
+                e.speed = 5;
+                e.lifepoints = 2;
+                break;
+            case 3:
+                e.shipType = 8;
+                e.height = 5;
+                e.width = 4;
+                e.speed = 1; 
+                e.lifepoints = 1;
+                break;
+            case 4:
+                e.movement = 8;
+                e.shipType = 16;
+                e.height = 8;
+                e.width = 5;
+                e.speed = 3;
+                e.lifepoints = 2;
+                break;
+            case 5:
+                e.shipType = 32;
+                e.height = 7;
+                e.width = 8;
+                e.speed = 1;//
+                e.lifepoints = 2;
+                break;
+            case 6:
+                e.movement = 16;
+                e.shipType = 64;
+                e.height = 7;
+                e.width = 8;
+                e.speed = 1;//
+                e.lifepoints = 1;
+                break;
+            default:
+                e.shipType = 128;
+                e.height = 5;
+                e.width = 6;
+                e.speed = 1;//
+                e.lifepoints = 8;
+                break;
         }
         enemies[numberOfEnemies] = e;
         numberOfEnemies++;
@@ -161,6 +161,6 @@ void createSupply(byte x, byte y) {
     s.type = random(0,8);
     s.alive = true;
     supplies[noOfSupplies] = s;
-	noOfSupplies++;
+    noOfSupplies++;
     drawSupply();
 }
