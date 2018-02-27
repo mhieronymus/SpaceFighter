@@ -15,7 +15,6 @@
 #define MOVE_DOWNRIGHT 3
 #define MOVE_RIGHT 2
 #define MOVE_UPRIGHT 1
-#define DEBUG false
 
 typedef struct
 {
@@ -48,6 +47,7 @@ typedef struct
     byte speed; // Higher is better.
     byte cooldown; // Shoot if cooldown == 0;
     byte fireSpeed; // The lower, the faster you can fire.
+	byte lifepoints;
 } Player;
 
 typedef struct

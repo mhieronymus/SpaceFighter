@@ -285,8 +285,7 @@ void enemiesShoot() {
             b.appearance = 1;
             b.height = 2;
             b.width = 2;
-            // There are no lifepoints for the player. Every hit is a kill.
-            b.damage = 0;
+            b.damage = 3;
             b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
@@ -305,8 +304,7 @@ void enemiesShoot() {
             b.appearance = 1;
             b.height = 2;
             b.width = 2;
-            // There are no lifepoints for the player. Every hit is a kill.
-            b.damage = 0;
+            b.damage = 1;
             b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
@@ -325,8 +323,7 @@ void enemiesShoot() {
             b.appearance = 1;
             b.height = 2;
             b.width = 2;
-            // There are no lifepoints for the player. Every hit is a kill.
-            b.damage = 0;
+            b.damage = 1;
             b.speed = 0;
             b.alive = true;
             b.playersBullet = false;
@@ -345,8 +342,7 @@ void enemiesShoot() {
             b.appearance = 1;
             b.height = 2;
             b.width = 2;
-            // There are no lifepoints for the player. Every hit is a kill.
-            b.damage = 0;
+            b.damage = 2;
             b.speed = 2;
             b.alive = true;
             b.playersBullet = false;
@@ -366,8 +362,7 @@ void enemiesShoot() {
 					b.appearance = 1;
 					b.height = 2;
 					b.width = 2;
-					// There are no lifepoints for the player. Every hit is a kill.
-					b.damage = 0;
+					b.damage = 2;
 					b.speed = 0;
 					b.alive = true;
 					b.playersBullet = false;

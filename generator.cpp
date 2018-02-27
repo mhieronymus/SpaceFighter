@@ -16,16 +16,17 @@ void initPlayer(bool newGame) {
     if(newGame)
         player.score = 0;
     player.numberOfSuperbombs = 0;
-    player.invincible = 1;
+    player.invincible = 2;
     player.bulletType = 1;
     player.bulletSpeed = 1;
     player.bullets = 0;
     player.maxBullets = 2;
+	player.lifepoints = 3;
 	if(newGame)
 		player.speed = 1; // Higher is better.
     player.alive = true;
     if(newGame)
-        player.lives = 5;
+        player.lives = 4;
     player.fireSpeed = 100;
     player.cooldown = 0;
 	player.firetype = 0;

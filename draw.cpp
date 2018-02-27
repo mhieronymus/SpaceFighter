@@ -268,19 +268,6 @@ void drawScore() {
     arduboy.print("Score:");
     arduboy.setCursor(110, 0);
     arduboy.print(player.score);
-    if(DEBUG) {
-       // arduboy.print(numberOfBullets);
-        byte test = 0;
-        for(byte i=0; i<numberOfBullets; i++) {
-            if(bullets[i].alive) {
-                test = test + 1;
-            }
-        }
-        arduboy.setCursor(70, 0);
-        arduboy.print(test);
-        arduboy.setCursor(3, 0);
-        arduboy.print(player.bullets);
-    }
 }
 
 void drawLives() {

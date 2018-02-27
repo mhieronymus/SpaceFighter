@@ -18,36 +18,14 @@ void checkCollisionPlayer() {
                 &&(abs(player.y-bullets[i].y) < player.height-1
                 && bullets[i].y >= player.y)
                 && !bullets[i].playersBullet && player.invincible == 0) {
-                player.alive = false;
+                if(bullets[i].damage >= player.lifepoints) {
+					player.alive = false;
+					player.lives--;
+					bullets[i].alive = false;
+					break;
+				}
+				player.lifepoints -= bullets[i].damage;
                 bullets[i].alive = false;
-                player.lives--;
-                if(DEBUG) {
-                    arduboy.clear();
-                    arduboy.setCursor(0,0);
-                    arduboy.print("BULLET");
-                    arduboy.setCursor(0,20);
-                    arduboy.print(bullets[i].x);
-                    arduboy.setCursor(0,40);
-                    arduboy.print(bullets[i].y);
-                    arduboy.setCursor(32,20);
-                    arduboy.print(bullets[i].width);
-                    arduboy.setCursor(32,40);
-                    arduboy.print(bullets[i].height);
-
-                    arduboy.setCursor(64,0);
-                    arduboy.print("PLAYER");
-                    arduboy.setCursor(64,20);
-                    arduboy.print(player.x);
-                    arduboy.setCursor(64,40);
-                    arduboy.print(player.y);
-                    arduboy.setCursor(96,20);
-                    arduboy.print(player.width);
-                    arduboy.setCursor(96,40);
-                    arduboy.print(player.height);
-
-                    arduboy.display();
-                }
-                break;
             }
         }
     }
@@ -63,32 +41,6 @@ void checkCollisionPlayer() {
                 player.alive = false;
                 enemies[i].alive = false;
                 player.lives--;
-                if(DEBUG) {
-                    arduboy.clear();
-                    arduboy.setCursor(0,0);
-                    arduboy.print("ENEMY");
-                    arduboy.setCursor(0,20);
-                    arduboy.print(enemies[i].x);
-                    arduboy.setCursor(0,40);
-                    arduboy.print(enemies[i].y);
-                    arduboy.setCursor(32,20);
-                    arduboy.print(enemies[i].width);
-                    arduboy.setCursor(32,40);
-                    arduboy.print(enemies[i].height);
-
-                    arduboy.setCursor(64,0);
-                    arduboy.print("PLAYER");
-                    arduboy.setCursor(64,20);
-                    arduboy.print(player.x);
-                    arduboy.setCursor(64,40);
-                    arduboy.print(player.y);
-                    arduboy.setCursor(96,20);
-                    arduboy.print(player.width);
-                    arduboy.setCursor(96,40);
-                    arduboy.print(player.height);
-
-                    arduboy.display();
-                }
                 break;
             }
         }
