@@ -45,7 +45,7 @@ typedef struct
 	// 3 is two in the middle in addition
     // 4 is two more diagonal
 	byte firetype; 
-    byte speed; // Lower is better.
+    byte speed; // Higher is better.
     byte cooldown; // Shoot if cooldown == 0;
     byte fireSpeed; // The lower, the faster you can fire.
 } Player;
@@ -67,7 +67,7 @@ typedef struct
     // the image, bullettype and speed. The highest 1 indicates the type
     // e.g. 0100 is the same type as 0111 or 0101 or 0110.
     byte shipType;
-    byte speed; // Lower is better.
+    byte speed; // Lower is better. Depends on current frame
     byte lifepoints;
     bool alive;
     // Each number is a placeholder for another movement, e.g. straight-forward
@@ -76,7 +76,6 @@ typedef struct
     byte direction;
     // If true, create a random supply after destruction.
     bool supply;
-    byte maxBullets;
     byte tick; // Used for altering the direction.
 } Enemy;
 

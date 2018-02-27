@@ -107,8 +107,8 @@ void checkCollisionPlayer() {
                         player.lives++;
                         break;
 					case 1:
-                        if(player.speed > 1) {
-							player.speed--;
+                        if(player.speed < 2) {
+							player.speed++;
 						} else {
 							player.score += 5;
 						}
@@ -167,11 +167,11 @@ void checkCollisionPlayer() {
 void checkCollisionEnemy() {
     for(byte i=0; i<numberOfEnemies; i++) {
         for(byte j=0; j<numberOfBullets; j++) {
-            if((abs(enemies[i].x-bullets[j].x) < enemies[i].width
+            if(bullets[j].playersBullet
+				&& (abs(enemies[i].x-bullets[j].x) < enemies[i].width
                 && bullets[j].x >= enemies[i].x)
                 &&(abs(enemies[i].y-bullets[j].y) < enemies[i].height
-                && bullets[j].y >= enemies[i].y)
-                && bullets[j].playersBullet) {
+                && bullets[j].y >= enemies[i].y)) {
 
                 bullets[j].alive = false;
                 enemies[i].lifepoints--;

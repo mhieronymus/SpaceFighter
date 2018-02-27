@@ -49,11 +49,25 @@ void drawEnemies() {
             arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
                 enemy2, enemies[i-1].width, enemies[i-1].height, 1);
         } else if(enemies[i-1].shipType < 16) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+			for(byte j=0; j<4; j++) 
+				arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+2, 1);
+			
+			arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+3, 1);
+			arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+1, 1);
+			
+			arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y+4, 1);
+			arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y, 1);            
         } else if(enemies[i-1].shipType < 32) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy1, enemies[i-1].width, enemies[i-1].height, 1);
+			for(byte j=0; j<5; j++) {
+				arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+3, 1);
+				arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+4, 1);
+			}
+			
+			for(byte j=0; j<3; j++) {
+				arduboy.drawPixel(enemies[i-1].x+2+j, enemies[i-1].y+j, 1);
+				arduboy.drawPixel(enemies[i-1].x+4-j, enemies[i-1].y+j+5, 1);
+			}
+			
         } else if(enemies[i-1].shipType < 64) {
             arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
                 enemy2, enemies[i-1].width, enemies[i-1].height, 1);

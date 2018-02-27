@@ -22,7 +22,7 @@ void initPlayer(bool newGame) {
     player.bullets = 0;
     player.maxBullets = 2;
 	if(newGame)
-		player.speed = 2; // Lower is better.
+		player.speed = 1; // Higher is better.
     player.alive = true;
     if(newGame)
         player.lives = 5;
@@ -77,77 +77,76 @@ void generateEnemy() {
         e.x = SCREEN_WIDTH;
         e.y = random(10, SCREEN_HEIGHT-10);
         byte rnd = random(0, 5);
-        e.lifepoints = random(1, 1+player.destroyedShips);
         e.alive = true;
         e.direction = MOVE_LEFT; //random(0, 8)
         e.movement = 0; // Straight line
         e.tick = 0;
-		// random(0, 100) > 50 && 
-        if(MAXSUPPLY >= noOfSupplies) {
+        if(random(0, 100) > 75 && MAXSUPPLY >= noOfSupplies) {
             e.supply = true;
         }
-        if(rnd == 0) {
-            e.movement = 4;
-            e.shipType = 1;
-            e.height = 7;
-            e.width = 8;
-            e.speed = 10;
-            e.maxBullets = 1;
-            e.lifepoints = 1;
-        } else if(rnd == 1) {
-            e.movement = 8;
-            e.shipType = 2;
-            e.height = 5;
-            e.width = 6;
-            e.speed = 4;
-            e.maxBullets = 3;
-            e.lifepoints = 1;
-        } else if(rnd == 2) {
-            e.movement = 2;
-            e.direction = MOVE_DOWNLEFT;
-            e.shipType = 4;
-            e.height = 7;
-            e.width = 8;
-            e.speed = 3;
-            e.maxBullets = 10;
-            e.lifepoints = 5;
-        } else if(rnd == 3) {
-            e.shipType = 8;
-            e.height = 7;
-            e.width = 8;
-            e.speed = 10;
-            e.maxBullets = 1;
-            e.lifepoints = 1;
-        } else if(rnd == 4) {
-            e.movement = 8;
-            e.shipType = 16;
-            e.height = 5;
-            e.width = 6;
-            e.speed = 2;
-            e.maxBullets = 8;
-            e.lifepoints = 5;
-        } else if(rnd == 5) {
-            e.shipType = 32;
-            e.height = 7;
-            e.width = 8;
-            e.speed = 3;
-            e.maxBullets = 2;
-            e.lifepoints = 2;
-        } else if(rnd == 6) {
-            e.movement = 16;
-            e.shipType = 64;
-            e.height = 7;
-            e.width = 8;
-            e.speed = 10;
-            e.maxBullets = 1;
-            e.lifepoints = 1;
-        } else if(rnd == 7) {
-            e.shipType = 128;
-            e.height = 5;
-            e.width = 6;
-            e.speed = 2;
-            e.maxBullets = 6;
-            e.lifepoints = 8;
+		switch(rnd) {
+			case 0:
+				e.movement = 4;
+				e.shipType = 1;
+				e.height = 7;
+				e.width = 8;
+				e.speed = 7;
+				e.lifepoints = random(5, 5+player.destroyedShips);
+				break;
+			case 1:
+				e.movement = 8;
+				e.shipType = 2;
+				e.height = 5;
+				e.width = 6;
+				e.speed = 4;
+				e.lifepoints = 1;
+				break;
+			case 2:
+				e.movement = 2;
+				e.direction = MOVE_DOWNLEFT;
+				e.shipType = 4;
+				e.height = 7;
+				e.width = 8;
+				e.speed = 5;
+				e.lifepoints = 2;
+				break;
+			case 3:
+				e.shipType = 8;
+				e.height = 5;
+				e.width = 4;
+				e.speed = 1; 
+				e.lifepoints = 1;
+				break;
+			case 4:
+				e.movement = 8;
+				e.shipType = 16;
+				e.height = 8;
+				e.width = 5;
+				e.speed = 3;
+				e.lifepoints = 2;
+				break;
+			case 5:
+				e.shipType = 32;
+				e.height = 7;
+				e.width = 8;
+				e.speed = 1;//
+				e.lifepoints = 2;
+				break;
+			case 6:
+				e.movement = 16;
+				e.shipType = 64;
+				e.height = 7;
+				e.width = 8;
+				e.speed = 1;//
+				e.lifepoints = 1;
+				break;
+			default:
+				e.shipType = 128;
+				e.height = 5;
+				e.width = 6;
+				e.speed = 1;//
+				e.lifepoints = 8;
+				break;
         }
         enemies[numberOfEnemies] = e;
         numberOfEnemies++;

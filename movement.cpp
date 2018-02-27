@@ -4,11 +4,11 @@ void moveGame() {
     if(player.invincible != 0 && arduboy.everyXFrames(120)) {
         player.invincible = player.invincible >> 1;
     }
-    if(arduboy.everyXFrames(2)) moveStars();
+    moveStars();
 
     if(arduboy.everyXFrames(8)) moveSupplies();
-    if(arduboy.everyXFrames(3)) moveBullets();
-    if(player.alive && arduboy.everyXFrames(player.speed)) movePlayer();
+    if(arduboy.everyXFrames(2)) moveBullets();
+    if(player.alive) movePlayer();
 
     moveEnemies();
     if(player.cooldown != 0) player.cooldown--;
@@ -66,13 +66,19 @@ void moveBullets() {
 }
 
 void movePlayer() {
-    if(arduboy.pressed(LEFT_BUTTON) && player.x > 0) player.x--;
+    if(arduboy.pressed(LEFT_BUTTON) && player.x-player.speed > 0) 
+		player.x -= player.speed;
 
-    if(arduboy.pressed(UP_BUTTON) && player.y > 0) player.y--;
+    if(arduboy.pressed(UP_BUTTON) && player.y-player.speed > 0) 
+		player.y -= player.speed;
 
-    if(arduboy.pressed(DOWN_BUTTON) && player.y+player.height < 63) player.y++;
+    if(arduboy.pressed(DOWN_BUTTON) 
+		&& player.y+player.height+player.speed < 63) 
+		player.y += player.speed;
 
-    if(arduboy.pressed(RIGHT_BUTTON) && player.x+player.width < 127) player.x++;
+    if(arduboy.pressed(RIGHT_BUTTON) 
+		&& player.x+player.width+player.speed < 127) 
+		player.x += player.speed;
 }
 
 void moveEnemies() {
@@ -216,33 +222,42 @@ void moveEnemies() {
             switch(enemies[i-1].direction) {
                 // UP and RIGHT+UP
                 case MOVE_UPRIGHT:
-                    if(!blockedRIGHT) enemies[i-1].x = enemies[i-1].x + 1;
+                    if(!blockedRIGHT) 
+						enemies[i-1].x += 1;
                 case MOVE_UP:
-                    if(!blockedUP) enemies[i-1].y = enemies[i-1].y - 1;
+                    if(!blockedUP) 
+						enemies[i-1].y -= 1;
                     break;
 
                 // UP+LEFT
                 case MOVE_UPLEFT:
-                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
-                    if(!blockedUP) enemies[i-1].y = enemies[i-1].y - 1;
+                    if(!blockedLEFT) 
+						enemies[i-1].x -= 1;
+                    if(!blockedUP) 
+						enemies[i-1].y -= 1;
                     break;
 
                 // Left and LEFT+DOWN
                 case MOVE_DOWNLEFT:
-                    if(!blockedDOWN) enemies[i-1].y = enemies[i-1].y + 1;
+                    if(!blockedDOWN) 
+						enemies[i-1].y += 1;
                 case MOVE_LEFT:
-                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
+                    if(!blockedLEFT) 
+						enemies[i-1].x -= 1;
                     break;
 
                 // DOWN and DOWN+RIGHT
                 case MOVE_DOWNRIGHT:
-                    if(!blockedRIGHT) enemies[i-1].x = enemies[i-1].x + 1;
+                    if(!blockedRIGHT) 
+						enemies[i-1].x += 1;
                 case MOVE_DOWN:
-                    if(!blockedDOWN) enemies[i-1].y = enemies[i-1].y + 1;
+                    if(!blockedDOWN) 
+						enemies[i-1].y += 1;
                     break;
 
                 default:
-                    if(!blockedLEFT) enemies[i-1].x = enemies[i-1].x - 1;
+                    if(!blockedLEFT) 
+						enemies[i-1].x -= 1;
             }
         }
     }
@@ -258,7 +273,7 @@ void enemiesShoot() {
     byte i = 1;
 
     while(numberOfBullets<MAXBULLETS && i<numberOfEnemies) {
-        if(enemies[i-1].shipType < 2
+        if(enemies[i-1].shipType == 1
             && arduboy.everyXFrames(120) && random(0,100) > 60) {
 
             Bullet b;
@@ -278,8 +293,9 @@ void enemiesShoot() {
             b.direction = MOVE_LEFT;
             bullets[numberOfBullets] = b;
             numberOfBullets++;
-        } else if(enemies[i-1].shipType < 4
+        } else if(enemies[i-1].shipType == 2
             && arduboy.everyXFrames(60) && random(0,100) > 70) {
+				
             Bullet b;
             // Shoot the bullet up left from the enemy.
             b.x = enemies[i-1].x + 1;
@@ -297,8 +313,9 @@ void enemiesShoot() {
             b.direction = MOVE_LEFT;
             bullets[numberOfBullets] = b;
             numberOfBullets++;
-        } else if(enemies[i-1].shipType < 8
+        } else if(enemies[i-1].shipType == 4
             && arduboy.everyXFrames(240) && random(0,100) > 50) {
+				
             Bullet b;
             // Shoot the bullet up left from the enemy.
             b.x = enemies[i-1].x + 1;
@@ -316,15 +333,59 @@ void enemiesShoot() {
             b.direction = MOVE_LEFT;
             bullets[numberOfBullets] = b;
             numberOfBullets++;
-        } else if(enemies[i-1].shipType < 16) {
+        } else if(enemies[i-1].shipType == 8
+			&& arduboy.everyXFrames(20) && random(0,100) > 90) {
+				
+            Bullet b;
+            // Shoot the bullet in front of the enemy.
+            b.x = enemies[i-1].x - 1;
+            b.y = enemies[i-1].y + 2;
+            // Height and width depend on appearance which correlates to the
+            // bitmap.
+            b.appearance = 1;
+            b.height = 2;
+            b.width = 2;
+            // There are no lifepoints for the player. Every hit is a kill.
+            b.damage = 0;
+            b.speed = 2;
+            b.alive = true;
+            b.playersBullet = false;
+            b.direction = MOVE_LEFT;
+            bullets[numberOfBullets] = b;
+            numberOfBullets++;
+        } else if(enemies[i-1].shipType == 16
+			&& arduboy.everyXFrames(20) && random(0,100) > 65) {
+			for(byte j=0; j<2; j++) {
+				if(numberOfBullets<MAXBULLETS) {
+					Bullet b;
+					// Shoot the bullet in front of the enemy.
+					b.x = enemies[i-1].x - 1;
+					b.y = enemies[i-1].y + 3 + j;
+					// Height and width depend on appearance which correlates to the
+					// bitmap.
+					b.appearance = 1;
+					b.height = 2;
+					b.width = 2;
+					// There are no lifepoints for the player. Every hit is a kill.
+					b.damage = 0;
+					b.speed = 0;
+					b.alive = true;
+					b.playersBullet = false;
+					if(j == 0) {
+						b.direction = MOVE_DOWNLEFT;
+					} else {
+						b.direction = MOVE_UPLEFT;
+					}
+					bullets[numberOfBullets] = b;
+					numberOfBullets++;
+				}
+			}
 
-        } else if(enemies[i-1].shipType < 32) {
+        } else if(enemies[i-1].shipType == 32) {
 
-        } else if(enemies[i-1].shipType < 64) {
+        } else if(enemies[i-1].shipType == 64) {
 
-        } else if(enemies[i-1].shipType < 128) {
-
-        } else if(enemies[i-1].shipType < 256) {
+        } else if(enemies[i-1].shipType == 128) {
 
         }
         i++;
