@@ -84,7 +84,7 @@ void loop() {
                 delay(200);
                 drawPause();
             }
-        } else  {
+        } else {
             if(drawGame()) {
                 gameStarted = false;
                 delay(1000);

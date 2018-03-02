@@ -12,24 +12,25 @@ void initPlayer(bool newGame) {
     player.x = 0;
     player.y = 0;
     player.width = 14;
-    player.height = 14;
-    if(newGame)
-        player.score = 0;
+    player.height = 14;        
     player.numberOfSuperbombs = 0;
     player.invincible = 2;
-    player.bulletType = 1;
-    player.bulletSpeed = 1;
-    player.bullets = 0;
-    player.maxBullets = 2;
-	player.lifepoints = 3;
-	if(newGame)
-		player.speed = 1; // Higher is better.
-    player.alive = true;
-    if(newGame)
+    
+    if(newGame) {
+        player.score = 0;
+        player.speed = 1; // Higher is better.
         player.lives = 4;
-    player.fireSpeed = 100;
+        player.bulletType = 1;
+        player.bulletSpeed = 1;
+        player.maxBullets = 3;
+        player.fireSpeed = 80;
+    }
+    
+    player.lifepoints = 3;        
+    player.alive = true;
+    player.bullets = 0;
     player.cooldown = 0;
-	player.firetype = 0;
+    player.firetype = 0;
 }
 
 void initEnemies() {
@@ -53,7 +54,7 @@ void initSupplies() {
 
 void initExplosions() {
     for(byte i=0; i<=MAXENEMIES; i++) {
-        explosions[i].tick=100;
+        explosions[i].tick=255;
     }
 }
 
@@ -71,8 +72,9 @@ void generateStar() {
 }
 
 void generateEnemy() {
-    if(random(0, 4) > numberOfEnemies
-		&& numberOfEnemies < MAXENEMIES && random(0,100) > 85)  {
+    byte max_level_enemies = 4 + player.score/100;
+    if(random(0, max_level_enemies) > numberOfEnemies
+        && numberOfEnemies < MAXENEMIES && random(0,100) > 85)  {
 			
         Enemy e;
         e.x = SCREEN_WIDTH;
@@ -80,9 +82,8 @@ void generateEnemy() {
         byte rnd = random(0, 5);
         e.alive = true;
         e.direction = MOVE_LEFT; //random(0, 8)
-        e.movement = 0; // Straight line
         e.tick = 0;
-        if(random(0, 100) > 75 && MAXSUPPLY >= noOfSupplies) {
+        if(random(0, 100) > 85 && MAXSUPPLY > noOfSupplies) {
             e.supply = true;
         }
         switch(rnd) {
@@ -130,7 +131,7 @@ void generateEnemy() {
                 e.shipType = 32;
                 e.height = 7;
                 e.width = 8;
-                e.speed = 1;//
+                e.speed = 1;
                 e.lifepoints = 2;
                 break;
             case 6:
@@ -138,10 +139,11 @@ void generateEnemy() {
                 e.shipType = 64;
                 e.height = 7;
                 e.width = 8;
-                e.speed = 1;//
+                e.speed = 1;
                 e.lifepoints = 1;
                 break;
             default:
+                e.movement = 0; // Straight line
                 e.shipType = 128;
                 e.height = 5;
                 e.width = 6;
@@ -159,6 +161,9 @@ void createSupply(byte x, byte y) {
     s.x = x;
     s.y = y;
     s.type = random(0,8);
+    // Make getting an extra life more unlikely
+    if(s.type == 0 and random(0, 100) < 80)
+        s.type = 8;
     s.alive = true;
     supplies[noOfSupplies] = s;
     noOfSupplies++;
