@@ -6,6 +6,9 @@ void initGame(bool newGame) {
     initSupplies();
     initBullets();
     initExplosions();
+    boss_coming = false;
+    extra_tick = 0;
+    last_boss = 0;
 }
 
 void initPlayer(bool newGame) {
@@ -71,6 +74,26 @@ void generateStar() {
     }
 }
 
+void generateBoss() {
+    if(numberOfEnemies == 0) {
+        Enemy e;
+        e.x = SCREEN_WIDTH-13;
+        e.y = 96;
+        e.y = 90;
+        e.alive = true;
+        e.movement = 32;
+        e.tick = 0;
+        e.supply = true;
+        e.shipType = 32;
+        e.height = 32;
+        e.width = 13;
+        e.speed = 10;
+        e.lifepoints = 30 + player.score/10;
+        enemies[numberOfEnemies] = e;
+        numberOfEnemies++;
+    }
+}
+
 void generateEnemy() {
     byte max_level_enemies = 4 + player.score/100;
     if(random(0, max_level_enemies) > numberOfEnemies
@@ -101,7 +124,7 @@ void generateEnemy() {
                 e.height = 5;
                 e.width = 6;
                 e.speed = 4;
-                e.lifepoints = 1;
+                e.lifepoints = 1 + player.score/50;
                 break;
             case 2:
                 e.movement = 2;
@@ -110,7 +133,7 @@ void generateEnemy() {
                 e.height = 7;
                 e.width = 8;
                 e.speed = 5;
-                e.lifepoints = 2;
+                e.lifepoints = 1 + player.score/60;
                 break;
             case 3:
                 e.shipType = 8;
@@ -125,14 +148,14 @@ void generateEnemy() {
                 e.height = 8;
                 e.width = 5;
                 e.speed = 3;
-                e.lifepoints = 2;
+                e.lifepoints = 1 + player.score/10;
                 break;
             case 5:
                 e.shipType = 32;
                 e.height = 7;
                 e.width = 8;
                 e.speed = 1;
-                e.lifepoints = 2;
+                e.lifepoints = 1 + player.score/20;
                 break;
             case 6:
                 e.movement = 16;
@@ -140,7 +163,7 @@ void generateEnemy() {
                 e.height = 7;
                 e.width = 8;
                 e.speed = 1;
-                e.lifepoints = 1;
+                e.lifepoints = 1 + player.score/30;
                 break;
             default:
                 e.movement = 0; // Straight line

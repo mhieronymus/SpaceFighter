@@ -51,6 +51,11 @@ Supply supplies[MAXSUPPLY];
 byte noOfSupplies = 0;
 bool gameStarted = false;
 Explosion explosions[MAXENEMIES+1];
+bool boss_coming = false;
+byte extra_tick = 0;
+byte which_extra;
+byte last_boss = 0;
+
 
 
 /**
@@ -75,7 +80,15 @@ void loop() {
     if(gameStarted) {
         if(player.alive) {
             generateStar();
-            generateEnemy();
+            if(player.score/100 > last_boss) {
+                last_boss++;
+                boss_coming = true;
+            }
+            if(boss_coming) {
+                generateBoss();
+            } else {
+                generateEnemy();
+            }
             drawGame();
             moveGame();
             checkCollision();

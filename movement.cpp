@@ -201,9 +201,18 @@ void moveEnemies() {
                         }
                     }
                     break;
-
+                // Move up and down
                 case 32:
-
+                    if(enemies[i-1].y > SCREEN_HEIGHT-enemies[i-1].height) {
+                        enemies[i-1].direction = MOVE_UP;
+                        blockedUP = false;
+                    } else if(enemies[i-1].tick < 30) {
+                        enemies[i-1].direction = MOVE_UP;
+                        enemies[i-1].tick++;
+                    } else if(enemies[i-1].tick < 60) {
+                        enemies[i-1].direction = MOVE_DOWN;
+                        enemies[i-1].tick = (enemies[i-1].tick+1)%60;
+                    } 
                     break;
 
                 case 64:
@@ -272,10 +281,9 @@ void moveStars() {
 void enemiesShoot() {
     byte i = 1;
 
-    while(numberOfBullets<MAXBULLETS && i<numberOfEnemies) {
+    while(numberOfBullets<MAXBULLETS && i<=numberOfEnemies) {
         switch(enemies[i-1].shipType) {
             case 1:
-                
                 if(arduboy.everyXFrames(120) && random(0,100) > 60) {
                     Bullet b;
                     // Shoot the bullet up left from the enemy.
@@ -384,10 +392,100 @@ void enemiesShoot() {
                 }
                 break;
             case 32:
-                break;
-            case 64:
+                // Shoot with upper two canons 
+                if(arduboy.everyXFrames(60) && random(0,100) > 35) {	
+                    if(numberOfBullets<MAXBULLETS) {
+                        Bullet b;
+                        b.x = enemies[i-1].x + 3;
+                        b.y = enemies[i-1].y + 4;
+                        b.appearance = 1;
+                        b.height = 2;
+                        b.width = 2;
+                        b.damage = 1;
+                        b.speed = 1;
+                        b.alive = true;
+                        b.playersBullet = false;
+                        b.direction = MOVE_LEFT;
+                        bullets[numberOfBullets] = b;
+                        numberOfBullets++;
+                    }
+                    if(numberOfBullets<MAXBULLETS) {
+                        Bullet b;
+                        b.x = enemies[i-1].x + 5;
+                        b.y = enemies[i-1].y + 9;
+                        b.appearance = 1;
+                        b.height = 2;
+                        b.width = 2;
+                        b.damage = 1;
+                        b.speed = 1;
+                        b.alive = true;
+                        b.playersBullet = false;
+                        b.direction = MOVE_LEFT;
+                        bullets[numberOfBullets] = b;
+                        numberOfBullets++;
+                    }
+                }
+                // Shoot with lower two canons 
+                if(arduboy.everyXFrames(30) && random(0,100) > 70) {	
+                    if(numberOfBullets<MAXBULLETS) {
+                        Bullet b;
+                        b.x = enemies[i-1].x + 5;
+                        b.y = enemies[i-1].y + 27;
+                        b.appearance = 1;
+                        b.height = 2;
+                        b.width = 2;
+                        b.damage = 1;
+                        b.speed = 1;
+                        b.alive = true;
+                        b.playersBullet = false;
+                        b.direction = MOVE_LEFT;
+                        bullets[numberOfBullets] = b;
+                        numberOfBullets++;
+                    }
+                    if(numberOfBullets<MAXBULLETS) {
+                        Bullet b;
+                        b.x = enemies[i-1].x + 3;
+                        b.y = enemies[i-1].y + 23;
+                        b.appearance = 1;
+                        b.height = 2;
+                        b.width = 2;
+                        b.damage = 1;
+                        b.speed = 1;
+                        b.alive = true;
+                        b.playersBullet = false;
+                        b.direction = MOVE_LEFT;
+                        bullets[numberOfBullets] = b;
+                        numberOfBullets++;
+                    }
+                }
+                // Shoot from circle
+                if(arduboy.everyXFrames(120)) {
+                    for(byte j=0; j<4; j++) {
+                        if(numberOfBullets<MAXBULLETS) {
+                            Bullet b;
+                            // Shoot the bullet in front of the enemy.
+                            b.x = enemies[i-1].x + j/2;
+                            b.y = enemies[i-1].y + 20 + j%2;
+                            b.appearance = 1;
+                            b.height = 2;
+                            b.width = 2;
+                            b.damage = 1;
+                            b.speed = 1;
+                            b.alive = true;
+                            b.playersBullet = false;
+                            if(j%2 == 0) {
+                                    b.direction = MOVE_DOWNLEFT;
+                            } else {
+                                    b.direction = MOVE_UPLEFT;
+                            }
+                            bullets[numberOfBullets] = b;
+                            numberOfBullets++;
+                        }
+                    }
+                }
                 break;
             default:
+                
                 break;
         }
         i++;

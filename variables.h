@@ -135,5 +135,8 @@ extern Supply supplies[MAXSUPPLY];
 extern byte noOfSupplies;
 extern bool gameStarted;
 extern Explosion explosions[MAXENEMIES+1];
-
+extern bool boss_coming;
+extern byte extra_tick;
+extern byte which_extra;
+extern byte last_boss;
 #endif

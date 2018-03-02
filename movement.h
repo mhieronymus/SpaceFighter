@@ -16,7 +16,6 @@ void moveSupplies();
 
 /**
  * @brief Bullets move
- * TODO: Check speed.
  */
 void moveBullets();
 
@@ -27,7 +26,6 @@ void movePlayer();
 
 /**
  * @brief Enemies move
- * TODO: Alter the directions. Check for speed.
  */
 void moveEnemies();
 
@@ -43,8 +41,6 @@ void enemiesShoot();
 
 /**
  * @brief Player shoots
- * TODO Add a delay so the player cannot shoot too much at once maybe?
- * Add different directions with different bullets.
  */
 void playerShoots();
 #endif

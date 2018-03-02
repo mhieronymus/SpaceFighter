@@ -3,11 +3,9 @@
 
 void checkCollision() {
     checkCollisionPlayer();
-    if(player.alive) {
-        checkCollisionEnemy();
-        checkEnemiesInFrame();
-        checkBulletsInFrame();
-    }
+    checkCollisionEnemy();
+    checkEnemiesInFrame();
+    checkBulletsInFrame();
 }
 
 void checkCollisionPlayer() {
@@ -42,7 +40,8 @@ void checkCollisionPlayer() {
                 && player.invincible == 0) {
 
                 player.alive = false;
-                enemies[i].alive = false;
+                if(!boss_coming)
+                    enemies[i].alive = false;
                 player.lives--;
                 break;
             }
@@ -57,6 +56,8 @@ void checkCollisionPlayer() {
                 && supplies[i].y >= player.y)) {
 
                 supplies[i].alive = false;
+                which_extra = supplies[i].type;
+                extra_tick = 160;
                 switch(supplies[i].type) {
                     case 0:
                         player.lives++;
@@ -129,14 +130,16 @@ void checkCollisionEnemy() {
                 && bullets[j].y >= enemies[i].y)) {
 
                 bullets[j].alive = false;
-                enemies[i].lifepoints--;
-                if(enemies[i].lifepoints == 0) enemies[i].alive = false;
-                player.score++;
-                if(enemies[i].supply && noOfSupplies < MAXSUPPLY 
-                    && !enemies[i].alive) {
-
-                    createSupply(enemies[i].x, enemies[i].y);
-                }
+                if(enemies[i].lifepoints < bullets[j].damage){ 
+                    enemies[i].alive = false;
+                    player.score++;
+                    if(enemies[i].shipType == 32) boss_coming = false;
+                    if(enemies[i].supply && noOfSupplies < MAXSUPPLY) {
+                        createSupply(enemies[i].x, enemies[i].y);
+                    }
+                } else {
+                    enemies[i].lifepoints -= bullets[j].damage;
+                }                    
             }
         }
     }
@@ -144,8 +147,8 @@ void checkCollisionEnemy() {
 
 void checkEnemiesInFrame() {
     for(byte i=0; i<numberOfEnemies; i++) {
-        if(enemies[i].x > 128 || enemies[i].y > 64
-            || enemies[i].x == 0 || enemies[i].y == 0) {
+        if(enemies[i].shipType != 32 && (enemies[i].x > 128 || enemies[i].y > 64
+            || enemies[i].x == 0 || enemies[i].y == 0)) {
 
             enemies[i].alive = false;
         }

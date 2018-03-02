@@ -16,7 +16,6 @@ void checkCollisionPlayer();
 
 /**
  * @brief Enemy: Check shot.
- * TODO: if(noOfSupplies = supplie.length) no supply
  */
 void checkCollisionEnemy();
 

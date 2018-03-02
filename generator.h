@@ -41,6 +41,11 @@ void initExplosions();
 void generateStar();
 
 /**
+ * @brief Generate a boss. 
+ */
+void generateBoss();
+
+/**
  * @brief Generate random enemies with their strength based on the player's
  * score and the number of enemies on the screen. May generate nothing.
  * You may use this every second.

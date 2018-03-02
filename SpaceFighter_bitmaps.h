@@ -11,4 +11,5 @@ extern const unsigned char ship1[];
 // arduboy_logo.png
 // 88x16
 extern const unsigned char arduboy_logo[];
+extern const unsigned char boss1[];
 #endif

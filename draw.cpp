@@ -10,6 +10,7 @@ bool drawGame() {
     drawBullets();
     drawStars();
     bool finished = drawExplosions();
+    drawExtra();
     arduboy.display();
     return finished;
 }
@@ -37,46 +38,50 @@ void drawPlayer() {
 }
 
 void drawEnemies() {
-    for(byte i=1; i<=numberOfEnemies; i++)
-    {
-        if(enemies[i-1].shipType < 2) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy0, enemies[i-1].width, enemies[i-1].height, 1);
-        } else if(enemies[i-1].shipType < 4) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy1, enemies[i-1].width, enemies[i-1].height, 1);
-        } else if(enemies[i-1].shipType < 8) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy2, enemies[i-1].width, enemies[i-1].height, 1);
-        } else if(enemies[i-1].shipType < 16) {
-            for(byte j=0; j<4; j++) 
-                arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+2, 1);
+    for(byte i=1; i<=numberOfEnemies; i++) {
+        switch(enemies[i-1].shipType) {
+            case 1:
+                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
+                    enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+                break;
+            case 2:
+                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
+                    enemy1, enemies[i-1].width, enemies[i-1].height, 1);
+                break;
+            case 4:
+                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
+                    enemy2, enemies[i-1].width, enemies[i-1].height, 1);
+                break;
+            case 8:
+                for(byte j=0; j<4; j++) 
+                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+2, 1);
             
-            arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+3, 1);
-            arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+1, 1);
+                arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+3, 1);
+                arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+1, 1);
             
-            arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y+4, 1);
-            arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y, 1);            
-        } else if(enemies[i-1].shipType < 32) {
-            for(byte j=0; j<5; j++) {
-                arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+3, 1);
-                arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+4, 1);
-            }
+                arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y+4, 1);
+                arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y, 1);     
+                break;
+            case 16:
+                for(byte j=0; j<5; j++) {
+                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+3, 1);
+                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+4, 1);
+                }
             
-            for(byte j=0; j<3; j++) {
-                arduboy.drawPixel(enemies[i-1].x+2+j, enemies[i-1].y+j, 1);
-                arduboy.drawPixel(enemies[i-1].x+4-j, enemies[i-1].y+j+5, 1);
-            }
-			
-        } else if(enemies[i-1].shipType < 64) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy2, enemies[i-1].width, enemies[i-1].height, 1);
-        } else if(enemies[i-1].shipType < 128) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy0, enemies[i-1].width, enemies[i-1].height, 1);
-        } else if(enemies[i-1].shipType < 256) {
-            arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+                for(byte j=0; j<3; j++) {
+                    arduboy.drawPixel(enemies[i-1].x+2+j, enemies[i-1].y+j, 1);
+                    arduboy.drawPixel(enemies[i-1].x+4-j, 
+                        enemies[i-1].y+j+5, 1);
+                }
+                break;
+            case 32:
+                // The boss is drawn slightly differently
+                arduboy.drawBitmap(enemies[i-1].x-19, enemies[i-1].y,
+                    boss1, enemies[i-1].width+19, enemies[i-1].height, 1);
+                break;
+            default:
+                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
+                    enemy2, enemies[i-1].width, enemies[i-1].height, 1);
         }
     }
 }
@@ -103,44 +108,49 @@ void drawSupply() {
     }
 }
 
-void drawExtra(byte type) {
-    arduboy.setCursor(80, 20);
-    switch(type) {
-        case 0:
-            arduboy.print("Extra life");
-            break;
-        case 1:
-            if(player.speed > 1) 
-                arduboy.print("More speed");
-            break;
-        case 2:
-            if(player.fireSpeed > 10) 
-                arduboy.print("Shoot faster");
-            break;
-        case 3:
-            if(player.maxBullets < 5) 
-                arduboy.print("Spam bullets");
-            break;
-        case 4:
-            if(player.bulletSpeed < 4) 
-                arduboy.print("Faster bullets");
-            break;
-        case 5:
-            arduboy.print("Invincible!!!");
-            break;
-        case 6:
-            break;
-        case 7:
-            if(player.fireSpeed > 10) 
-                arduboy.print("Shoot faster");
-            break;
-        case 8:
-            if(player.firetype < 5) 
-                arduboy.print("Shoot nicer");
-            break;
-        default:
-            arduboy.print("Extra life");
+void drawExtra() {
+    // It is a bit ugly, so I deactivated it for the moment
+    extra_tick = 0;
+    if(extra_tick > 0) {
+        arduboy.setCursor(30, 15);
+        switch(which_extra) {
+            case 0:
+                arduboy.print("Extra life");
+                break;
+            case 1:
+                if(player.speed > 1) 
+                    arduboy.print("More speed");
+                break;
+            case 2:
+                if(player.fireSpeed > 10) 
+                    arduboy.print("Shoot faster");
+                break;
+            case 3:
+                if(player.maxBullets < 5) 
+                    arduboy.print("Spam bullets");
+                break;
+            case 4:
+                if(player.bulletSpeed < 4) 
+                    arduboy.print("Faster bullets");
+                break;
+            case 5:
+                arduboy.print("Invincible!!!");
+                break;
+            case 6:
+                break;
+            case 7:
+                if(player.fireSpeed > 10) 
+                    arduboy.print("Shoot faster");
+                break;
+            case 8:
+                if(player.firetype < 5) 
+                    arduboy.print("Shoot nicer");
+                break;
+            default:
+                arduboy.print("Extra life");
         }
+        extra_tick--;
+    }
 }
 
 bool drawExplosions() {

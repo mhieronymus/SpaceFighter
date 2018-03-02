@@ -57,7 +57,7 @@ void drawSupply();
 /**
  * @brief Draw supply messages
  */
-void drawExtra(byte type);
+void drawExtra();
 
 /*
  * @brief Draws an explosion for destroyed ships.
