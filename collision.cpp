@@ -56,9 +56,15 @@ void checkCollisionPlayer() {
                 && supplies[i].y >= player.y)) {
 
                 supplies[i].alive = false;
-                which_extra = supplies[i].type;
                 extra_tick = 160;
-                switch(supplies[i].type) {
+                // Each number is a placeholder for different supplies, 
+                // e.g. extra live weapon upgrade or invincibility 
+                byte type = random(0,8);
+                // Make getting an extra life more unlikely
+                if(type == 0 and random(0, 100) < 80)
+                    type = 8;
+               // which_extra = type;
+                switch(type) {
                     case 0:
                         player.lives++;
                         break;

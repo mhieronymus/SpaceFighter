@@ -18,29 +18,17 @@ bool drawGame();
 void showTitle();
 
 /**
- * @brief Display Highscore with the scores.
- * This method is from Sebastian Goscik as seen in
- * https://github.com/Arduboy/Arduboy/blob/master/examples/ArduBreakout/ArduBreakout.ino
- * and slightly modified.
- * Function by nootropic design to display highscores.
- * TODO: Alter for bigger scores.
- */
-void showHighscore();
-
-/**
  * @brief Draw all stars in the background.
  */
 void drawStars();
 
 /**
  * @brief Draw the player in its current state.
- * TODO: Check for current powerups and choose different ships.
  */
 void drawPlayer();
 
 /**
  * @brief draw all the enemies.
- * TODO: Get the size of each image right.
  */
 void drawEnemies();
 
@@ -86,5 +74,21 @@ void drawPause();
  * @brief draw game over
  */
 void drawGameOver();
+
+/**
+ * @brief draw a healthbar of the player. Each point is one hit point.
+ */
+void drawHealthBar();
+
+/**
+ * @brief Draw the highscore as seen in 
+ * https://github.com/filmote/Steve/blob/master/Steve.ino
+ * 
+ * @param display the current score of the player after he or she played
+ * at least one game
+ * 
+ * @return true if the title should be shown, false if the game should start
+ */
+void drawHighscore(bool displayCurrentScore);
 
 #endif 

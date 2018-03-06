@@ -16,11 +16,9 @@ This game is still in development and there are a lot of bugs and missing featur
 
 ### Missing features
 * Ships only have limited movements
-* There are no levels or at least alternations of enemies. They just spawn randomly
-* There are no boss battles
+* There are no levels or at least alternations of enemies. They just spawn randomly (but they do get stronger)
 * There are no different backgrounds
 * There is no sound (but there actually is no sound in space. I suppose it still counts as a missing feature)
-* The pace of the game needs calibration
 
 ### Screenshots
 ![Title screen](docs/Title.JPG "Title screen")

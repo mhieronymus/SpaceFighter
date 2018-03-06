@@ -4,7 +4,7 @@
 // Define maximum amount of particles.
 #define MAXBULLETS 50
 #define MAXSTARS 25
-#define MAXENEMIES 10
+#define MAXENEMIES 5
 #define MAXSUPPLY 3
 // Define Movements
 #define MOVE_UP 0
@@ -15,6 +15,10 @@
 #define MOVE_DOWNRIGHT 3
 #define MOVE_RIGHT 2
 #define MOVE_UPRIGHT 1
+// For the highscore
+#define EEPROM_START_C1     EEPROM_STORAGE_SPACE_START
+#define EEPROM_START_C2     EEPROM_START_C1 + 1
+#define EEPROM_SCORE        EEPROM_START_C1 + 2
 
 typedef struct
 {
@@ -27,7 +31,6 @@ typedef struct
     byte destroyedShips;
     byte lives;
     bool alive;
-    byte numberOfSuperbombs;
     // set invincible to 1 and then every two second a right-shift until
     // invincible is zero.
     // This way you are 2 seconds invincible. Or more, if you set
@@ -38,16 +41,16 @@ typedef struct
     // The player cannot fire infinite bullets (and therefore stun the enemy).
     byte bullets;
     byte maxBullets;
-	// 0 is normal
+    // 0 is normal
     // 1 is two at once 
-	// 2 is one straight and two up/down diagonal 
-	// 3 is two in the middle in addition
+    // 2 is one straight and two up/down diagonal 
+    // 3 is two in the middle in addition
     // 4 is two more diagonal
-	byte firetype; 
+    byte firetype; 
     byte speed; // Higher is better.
     byte cooldown; // Shoot if cooldown == 0;
     byte fireSpeed; // The lower, the faster you can fire.
-	byte lifepoints;
+    byte lifepoints;
 } Player;
 
 typedef struct
@@ -86,7 +89,7 @@ typedef struct
     byte y;
     byte height;
     byte width;
-    byte appearance;
+    // byte appearance; // Currently only one appearance there.
     byte damage;
     byte speed;
     bool alive;
@@ -103,10 +106,6 @@ typedef struct
     byte x;
     byte y;
     bool alive;
-    // Each number is a placeholder for different supplies, e.g. extra live
-    // superbomb, weapon upgrade or invincibility (or even ship upgrade?).
-    // 0 is most rare, >8 is most common.
-    byte type;
 } Supply;
 
 typedef struct
@@ -137,6 +136,8 @@ extern bool gameStarted;
 extern Explosion explosions[MAXENEMIES+1];
 extern bool boss_coming;
 extern byte extra_tick;
-extern byte which_extra;
+extern unsigned int high_score;
+// Following is a bit ugly, hence I deactivated it.
+// extern byte which_extra;
 extern byte last_boss;
 #endif

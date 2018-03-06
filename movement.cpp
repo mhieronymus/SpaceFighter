@@ -289,9 +289,6 @@ void enemiesShoot() {
                     // Shoot the bullet up left from the enemy.
                     b.x = enemies[i-1].x + 1;
                     b.y = enemies[i-1].y + (enemies[i-1].height >> 1);
-                    // Height and width depend on appearance which correlates to the
-                    // bitmap.
-                    b.appearance = 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 3;
@@ -309,9 +306,6 @@ void enemiesShoot() {
                     // Shoot the bullet up left from the enemy.
                     b.x = enemies[i-1].x + 1;
                     b.y = enemies[i-1].y + 1;
-                    // Height and width depend on appearance which correlates to the
-                    // bitmap.
-                    b.appearance = 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
@@ -329,9 +323,6 @@ void enemiesShoot() {
                     // Shoot the bullet up left from the enemy.
                     b.x = enemies[i-1].x + 1;
                     b.y = enemies[i-1].y + 1;
-                    // Height and width depend on appearance which correlates to the
-                    // bitmap.
-                    b.appearance = 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
@@ -349,9 +340,6 @@ void enemiesShoot() {
                     // Shoot the bullet in front of the enemy.
                     b.x = enemies[i-1].x - 1;
                     b.y = enemies[i-1].y + 2;
-                    // Height and width depend on appearance which correlates to the
-                    // bitmap.
-                    b.appearance = 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 2;
@@ -371,9 +359,6 @@ void enemiesShoot() {
                             // Shoot the bullet in front of the enemy.
                             b.x = enemies[i-1].x - 1;
                             b.y = enemies[i-1].y + 3 + j;
-                            // Height and width depend on appearance which correlates to the
-                            // bitmap.
-                            b.appearance = 1;
                             b.height = 2;
                             b.width = 2;
                             b.damage = 2;
@@ -398,7 +383,6 @@ void enemiesShoot() {
                         Bullet b;
                         b.x = enemies[i-1].x + 3;
                         b.y = enemies[i-1].y + 4;
-                        b.appearance = 1;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -413,7 +397,6 @@ void enemiesShoot() {
                         Bullet b;
                         b.x = enemies[i-1].x + 5;
                         b.y = enemies[i-1].y + 9;
-                        b.appearance = 1;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -431,7 +414,6 @@ void enemiesShoot() {
                         Bullet b;
                         b.x = enemies[i-1].x + 5;
                         b.y = enemies[i-1].y + 27;
-                        b.appearance = 1;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -446,7 +428,6 @@ void enemiesShoot() {
                         Bullet b;
                         b.x = enemies[i-1].x + 3;
                         b.y = enemies[i-1].y + 23;
-                        b.appearance = 1;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -466,7 +447,6 @@ void enemiesShoot() {
                             // Shoot the bullet in front of the enemy.
                             b.x = enemies[i-1].x + j/2;
                             b.y = enemies[i-1].y + 20 + j%2;
-                            b.appearance = 1;
                             b.height = 2;
                             b.width = 2;
                             b.damage = 1;
@@ -503,7 +483,6 @@ void playerShoots() {
                     // A bullet should appear at front of the ship in the middle.
                     b.x = player.x + 1;
                     b.y = player.y + (player.height >> 1);
-                    b.appearance = player.bulletType;
                     b.damage = player.bulletType;
                     b.speed = player.bulletSpeed;
                     b.alive = true;
@@ -519,7 +498,6 @@ void playerShoots() {
                     Bullet b_2;
                     b_2.x = player.x + 1;
                     b_2.y = player.y + (player.height >> 1)+1;
-                    b_2.appearance = player.bulletType;
                     b_2.damage = player.bulletType;
                     b_2.speed = player.bulletSpeed;
                     b_2.alive = true;
@@ -533,7 +511,6 @@ void playerShoots() {
                         Bullet b_3;
                         b_3.x = player.x + 1;
                         b_3.y = player.y + (player.height >> 1)-1;
-                        b_3.appearance = player.bulletType;
                         b_3.damage = player.bulletType;
                         b_3.speed = player.bulletSpeed;
                         b_3.alive = true;
@@ -549,7 +526,6 @@ void playerShoots() {
                         Bullet b_2;
                         b_2.x = player.x + 1;
                         b_2.y = player.y + (player.height >> 1);
-                        b_2.appearance = player.bulletType;
                         b_2.damage = player.bulletType;
                         b_2.speed = player.bulletSpeed;
                         b_2.alive = true;
@@ -563,7 +539,6 @@ void playerShoots() {
                         Bullet b_2;
                         b_2.x = player.x + 1;
                         b_2.y = player.y + (player.height >> 1);
-                        b_2.appearance = player.bulletType;
                         b_2.damage = player.bulletType;
                         b_2.speed = player.bulletSpeed;
                         b_2.alive = true;
@@ -580,7 +555,6 @@ void playerShoots() {
                             Bullet b;
                             b.x = player.x + 1;
                             b.y = player.y + (player.height >> 1)-1+2*i;
-                            b.appearance = player.bulletType;
                             b.damage = player.bulletType;
                             b.speed = player.bulletSpeed;
                             b.alive = true;
@@ -598,7 +572,6 @@ void playerShoots() {
                     Bullet b_4;
                     b_4.x = player.x + 1;
                     b_4.y = player.y + (player.height >> 1);
-                    b_4.appearance = player.bulletType;
                     b_4.damage = player.bulletType;
                     b_4.speed = player.bulletSpeed;
                     b_4.alive = true;
@@ -612,7 +585,6 @@ void playerShoots() {
                         Bullet b_2;
                         b_2.x = player.x + 1;
                         b_2.y = player.y + (player.height >> 1);
-                        b_2.appearance = player.bulletType;
                         b_2.damage = player.bulletType;
                         b_2.speed = player.bulletSpeed;
                         b_2.alive = true;
@@ -627,7 +599,6 @@ void playerShoots() {
                         Bullet b_2;
                         b_2.x = player.x + 1;
                         b_2.y = player.y + (player.height >> 1);
-                        b_2.appearance = player.bulletType;
                         b_2.damage = player.bulletType;
                         b_2.speed = player.bulletSpeed;
                         b_2.alive = true;
@@ -644,7 +615,6 @@ void playerShoots() {
                     // A bullet should appear at front of the ship in the middle.
                     b_5.x = player.x + 1;
                     b_5.y = player.y + (player.height >> 1);
-                    b_5.appearance = player.bulletType;
                     b_5.damage = player.bulletType;
                     b_5.speed = player.bulletSpeed;
                     b_5.alive = true;

@@ -55,19 +55,44 @@ bool boss_coming = false;
 byte extra_tick = 0;
 byte which_extra;
 byte last_boss = 0;
+unsigned int high_score = 0;
 
 
-
-/**
- * @brief game over
- */
 void gameOver() {
     drawGameOver();
     delay(4000);
+    if(player.score > high_score) {
+        high_score = player.score;
+        EEPROM.put(EEPROM_SCORE, high_score);
+    }
+    bool draw_score = true;
+    while(draw_score) {
+        drawHighscore(true);
+        delay(200);
+        if(arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON)) 
+            draw_score = false;
+    }
 }
 
+/*
+ * @brief Checks if EEPROM is initialised. See 
+ * https://github.com/filmote/Steve/blob/master/EEPROMUtils.h
+ */
+void initEEPROM() {
+    byte c1 = EEPROM.read(EEPROM_START_C1);
+    byte c2 = EEPROM.read(EEPROM_START_C2);
+    // I just take two numbers in front of the actual highscore to check, if 
+    // it is a highscore from my game.
+    if(c1 != 83 || c2 != 77) {
+        EEPROM.update(EEPROM_START_C1, 83);
+        EEPROM.update(EEPROM_START_C2, 77);
+        EEPROM.put(EEPROM_SCORE, high_score);
+    }
+    EEPROM.get(EEPROM_SCORE, high_score);
+}
 
 void setup() {
+    initEEPROM();
     arduboy.begin();
     arduboy.setFrameRate(60);
     arduboy.initRandomSeed();
@@ -89,10 +114,10 @@ void loop() {
             } else {
                 generateEnemy();
             }
-            drawGame();
             moveGame();
             checkCollision();
             checkAlive();
+            drawGame();
             if(arduboy.pressed(A_BUTTON)) {
                 delay(200);
                 drawPause();

@@ -16,7 +16,6 @@ void initPlayer(bool newGame) {
     player.y = 0;
     player.width = 14;
     player.height = 14;        
-    player.numberOfSuperbombs = 0;
     player.invincible = 2;
     
     if(newGame) {
@@ -57,7 +56,7 @@ void initSupplies() {
 
 void initExplosions() {
     for(byte i=0; i<=MAXENEMIES; i++) {
-        explosions[i].tick=255;
+        explosions[i].tick=200;
     }
 }
 
@@ -183,10 +182,6 @@ void createSupply(byte x, byte y) {
     Supply s;
     s.x = x;
     s.y = y;
-    s.type = random(0,8);
-    // Make getting an extra life more unlikely
-    if(s.type == 0 and random(0, 100) < 80)
-        s.type = 8;
     s.alive = true;
     supplies[noOfSupplies] = s;
     noOfSupplies++;

@@ -11,6 +11,7 @@ bool drawGame() {
     drawStars();
     bool finished = drawExplosions();
     drawExtra();
+    drawHealthBar();
     arduboy.display();
     return finished;
 }
@@ -21,6 +22,7 @@ void showTitle() {
         arduboy.clear();
         // X, Y, name, width, height, color
         arduboy.drawBitmap(0, 0, title, 128, 64, 1);
+        drawHighscore(false);
         arduboy.display();
         if(arduboy.pressed(A_BUTTON)) showingTitle = false;
         delay(200);
@@ -111,6 +113,7 @@ void drawSupply() {
 void drawExtra() {
     // It is a bit ugly, so I deactivated it for the moment
     extra_tick = 0;
+    /*
     if(extra_tick > 0) {
         arduboy.setCursor(30, 15);
         switch(which_extra) {
@@ -151,6 +154,7 @@ void drawExtra() {
         }
         extra_tick--;
     }
+    */
 }
 
 bool drawExplosions() {
@@ -344,5 +348,35 @@ void drawGameOver() {
     arduboy.print( "Game");
     arduboy.setCursor(52, 54);
     arduboy.print("Over");
+    arduboy.display();
+}
+
+void drawHealthBar() {
+    for(byte i=0; i<player.lifepoints; i++) {
+        arduboy.fillRect(i*4+28, 1, 2, 2, 1); 
+    }
+}
+
+void drawHighscore(bool displayCurrentScore) {
+    arduboy.fillRect(0, 0, SCREEN_WIDTH, 10, 0);
+    if(displayCurrentScore) {
+        arduboy.setCursor(1, 0);
+        arduboy.print(F("Score: "));
+        arduboy.setCursor(39, 0);
+        if(player.score < 1000) arduboy.print("0");
+        if(player.score < 100) arduboy.print("0");
+        if(player.score < 10) arduboy.print("0");
+        arduboy.print(player.score);
+    }
+    
+    arduboy.setCursor(72, 0);
+    arduboy.print(F("High: "));
+    arduboy.setCursor(104, 0);
+    if(high_score < 1000) arduboy.print("0");
+    if(high_score < 100) arduboy.print("0");
+    if(high_score < 10) arduboy.print("0");
+    arduboy.print(high_score);
+    arduboy.drawLine(0, 9, SCREEN_WIDTH, 9, 1);
+    
     arduboy.display();
 }
