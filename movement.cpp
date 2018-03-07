@@ -72,34 +72,34 @@ void movePlayer() {
 }
 
 void moveEnemies() {
-    for(byte i=1; i<=numberOfEnemies; i++) {
-        if(arduboy.everyXFrames(enemies[i-1].speed)) {
+    for(byte i=0; i<numberOfEnemies; i++) {
+        if(arduboy.everyXFrames(enemies[i].speed)) {
             bool blockedUP = false;
             bool blockedDOWN = false;
             bool blockedLEFT = false;
             bool blockedRIGHT = false;
 
             // Check for collisions.
-            for(byte j=1; j<=numberOfEnemies; j++) {
+            for(byte j=0; j<numberOfEnemies; j++) {
                 if(j != i) {
-                    if(enemies[j-1].x+enemies[j-1].width == enemies[i-1].x-1 &&
-                       (abs(enemies[j-1].y-enemies[i-1].y) < enemies[i-1].height
-                       || abs(enemies[j-1].y-enemies[i-1].y) < enemies[j-1].height)) {
+                    if(enemies[j].x+enemies[j].width == enemies[i].x-1 &&
+                       (abs(enemies[j].y-enemies[i].y) < enemies[i].height
+                       || abs(enemies[j].y-enemies[i].y) < enemies[j].height)) {
                         blockedLEFT = true;
                     }
-                    if(enemies[j-1].x == enemies[i-1].x+1+enemies[i-1].width &&
-                       (abs(enemies[j-1].y-enemies[i-1].y) < enemies[i-1].height
-                       || abs(enemies[j-1].y-enemies[i-1].y) < enemies[j-1].height)) {
+                    if(enemies[j].x == enemies[i].x+1+enemies[i].width &&
+                       (abs(enemies[j].y-enemies[i].y) < enemies[i].height
+                       || abs(enemies[j].y-enemies[i].y) < enemies[j].height)) {
                         blockedRIGHT = true;
                     }
-                    if(enemies[j-1].y == enemies[i-1].y+1+enemies[i-1].height  &&
-                       (abs(enemies[j-1].x-enemies[i-1].x) < enemies[i-1].width
-                       || abs(enemies[j-1].x-enemies[i-1].x) < enemies[j-1].width)) {
+                    if(enemies[j].y == enemies[i].y+1+enemies[i].height  &&
+                       (abs(enemies[j].x-enemies[i].x) < enemies[i].width
+                       || abs(enemies[j].x-enemies[i].x) < enemies[j].width)) {
                         blockedDOWN = true;
                     }
-                    if(enemies[j-1].y + enemies[j-1].height == enemies[i-1].y-1 &&
-                       (abs(enemies[j-1].x-enemies[i-1].x) < enemies[i-1].width
-                       || abs(enemies[j-1].x-enemies[i-1].x) < enemies[j-1].width)) {
+                    if(enemies[j].y + enemies[j].height == enemies[i].y-1 &&
+                       (abs(enemies[j].x-enemies[i].x) < enemies[i].width
+                       || abs(enemies[j].x-enemies[i].x) < enemies[j].width)) {
                         blockedUP = true;
                     }
                 }
@@ -107,101 +107,101 @@ void moveEnemies() {
 
             // Ships of type 1 just move to the left.
             // Default is just a safety thing. Move to the left in worst case.
-            switch(enemies[i-1].movement) {
+            switch(enemies[i].movement) {
                 case 1:
                     // Do not change the direction.
                     break;
 
                 // Move up and down but always to the left.
                 case 2:
-                    if(enemies[i-1].tick < 15) {
-                        enemies[i-1].direction = MOVE_UPLEFT;
-                        enemies[i-1].tick++;
+                    if(enemies[i].tick < 15) {
+                        enemies[i].direction = MOVE_UPLEFT;
+                        enemies[i].tick++;
                     } else {
-                        enemies[i-1].direction = MOVE_DOWNLEFT;
-                        enemies[i-1].tick = (enemies[i-1].tick+1)%30;
+                        enemies[i].direction = MOVE_DOWNLEFT;
+                        enemies[i].tick = (enemies[i].tick+1)%30;
                     }
                     break;
 
                 // Move up, left, down, left, up etc.
                 case 4:
-                    if(enemies[i-1].tick < 15) {
-                        enemies[i-1].direction = MOVE_LEFT;
-                        enemies[i-1].tick++;
-                    } else if(enemies[i-1].tick < 30) {
-                        enemies[i-1].direction = MOVE_UP;
-                        enemies[i-1].tick++;
-                    } else if(enemies[i-1].tick < 45) {
-                        enemies[i-1].direction = MOVE_LEFT;
-                        enemies[i-1].tick++;
-                    } else if(enemies[i-1].tick < 60) {
-                        enemies[i-1].direction = MOVE_DOWN;
-                        enemies[i-1].tick = (enemies[i-1].tick+1)%60;
+                    if(enemies[i].tick < 15) {
+                        enemies[i].direction = MOVE_LEFT;
+                        enemies[i].tick++;
+                    } else if(enemies[i].tick < 30) {
+                        enemies[i].direction = MOVE_UP;
+                        enemies[i].tick++;
+                    } else if(enemies[i].tick < 45) {
+                        enemies[i].direction = MOVE_LEFT;
+                        enemies[i].tick++;
+                    } else if(enemies[i].tick < 60) {
+                        enemies[i].direction = MOVE_DOWN;
+                        enemies[i].tick = (enemies[i].tick+1)%60;
                     }
                     break;
 
                 // Go clockwise and some time to the left.
                 case 8:
-                    enemies[i-1].tick++;
-                    if(enemies[i-1].tick%6 == 0 && enemies[i-1].tick != 48) {
-                        enemies[i-1].direction = (enemies[i-1].direction + 1)%8;
-                    } else if(enemies[i-1].tick == 48) {
-                        enemies[i-1].direction = MOVE_LEFT;
-                        enemies[i-1].tick = 0;
+                    enemies[i].tick++;
+                    if(enemies[i].tick%6 == 0 && enemies[i].tick != 48) {
+                        enemies[i].direction = (enemies[i].direction + 1)%8;
+                    } else if(enemies[i].tick == 48) {
+                        enemies[i].direction = MOVE_LEFT;
+                        enemies[i].tick = 0;
                     }
                     break;
 
                 // Move towards the player.
                 case 16:
-                    enemies[i-1].tick++;
-                    if(enemies[i-1].tick%15 == 0) {
+                    enemies[i].tick++;
+                    if(enemies[i].tick%15 == 0) {
                         bool up = false;
                         bool down = false;
                         bool right = false;
                         bool left = false;
                         // Calculate the direction between the player and the enemy.
                         // Should we go up or down?
-                        if(player.y-player.height < enemies[i-1].y) {
+                        if(player.y-player.height < enemies[i].y) {
                             up = true;
-                        } else if(player.y > enemies[i-1].y-enemies[i-1].height) {
+                        } else if(player.y > enemies[i].y-enemies[i].height) {
                             down = true;
                         }
                         // Check for left or right
-                        if(player.x-player.width < enemies[i-1].x) {
+                        if(player.x-player.width < enemies[i].x) {
                             left = true;
-                        } else if(player.x > enemies[i-1].x-enemies[i-1].width) {
+                        } else if(player.x > enemies[i].x-enemies[i].width) {
                             right = true;
                         }
                         if(up) {
-                            enemies[i-1].direction = MOVE_UP;
+                            enemies[i].direction = MOVE_UP;
                             if(right)
-                                enemies[i-1].direction = MOVE_UPRIGHT;
+                                enemies[i].direction = MOVE_UPRIGHT;
                             if(left)
-                                enemies[i-1].direction = MOVE_UPLEFT;
+                                enemies[i].direction = MOVE_UPLEFT;
                         } else if(down) {
-                            enemies[i-1].direction = MOVE_DOWN;
+                            enemies[i].direction = MOVE_DOWN;
                             if(right)
-                                enemies[i-1].direction = MOVE_DOWNRIGHT;
+                                enemies[i].direction = MOVE_DOWNRIGHT;
                             if(left)
-                                enemies[i-1].direction = MOVE_DOWNLEFT;
+                                enemies[i].direction = MOVE_DOWNLEFT;
                         } else if(left) {
-                            enemies[i-1].direction = MOVE_LEFT;
+                            enemies[i].direction = MOVE_LEFT;
                         } else if(right) {
-                            enemies[i-1].direction = MOVE_RIGHT;
+                            enemies[i].direction = MOVE_RIGHT;
                         }
                     }
                     break;
                 // Move up and down
                 case 32:
-                    if(enemies[i-1].y > SCREEN_HEIGHT-enemies[i-1].height) {
-                        enemies[i-1].direction = MOVE_UP;
+                    if(enemies[i].y > SCREEN_HEIGHT-enemies[i].height) {
+                        enemies[i].direction = MOVE_UP;
                         blockedUP = false;
-                    } else if(enemies[i-1].tick < 30) {
-                        enemies[i-1].direction = MOVE_UP;
-                        enemies[i-1].tick++;
-                    } else if(enemies[i-1].tick < 60) {
-                        enemies[i-1].direction = MOVE_DOWN;
-                        enemies[i-1].tick = (enemies[i-1].tick+1)%60;
+                    } else if(enemies[i].tick < 30) {
+                        enemies[i].direction = MOVE_UP;
+                        enemies[i].tick++;
+                    } else if(enemies[i].tick < 60) {
+                        enemies[i].direction = MOVE_DOWN;
+                        enemies[i].tick = (enemies[i].tick+1)%60;
                     } 
                     break;
 
@@ -214,48 +214,48 @@ void moveEnemies() {
                     break;
 
                 default:
-                    enemies[i-1].direction = MOVE_LEFT;
+                    enemies[i].direction = MOVE_LEFT;
             }
 
-            switch(enemies[i-1].direction) {
+            switch(enemies[i].direction) {
                 // UP and RIGHT+UP
                 case MOVE_UPRIGHT:
                     if(!blockedRIGHT) 
-                        enemies[i-1].x += 1;
+                        enemies[i].x += 1;
                 case MOVE_UP:
                     if(!blockedUP) 
-                        enemies[i-1].y -= 1;
+                        enemies[i].y -= 1;
                     break;
 
                 // UP+LEFT
                 case MOVE_UPLEFT:
                     if(!blockedLEFT) 
-                        enemies[i-1].x -= 1;
+                        enemies[i].x -= 1;
                     if(!blockedUP) 
-                        enemies[i-1].y -= 1;
+                        enemies[i].y -= 1;
                     break;
 
                 // Left and LEFT+DOWN
                 case MOVE_DOWNLEFT:
                     if(!blockedDOWN) 
-                        enemies[i-1].y += 1;
+                        enemies[i].y += 1;
                 case MOVE_LEFT:
                     if(!blockedLEFT) 
-                        enemies[i-1].x -= 1;
+                        enemies[i].x -= 1;
                     break;
 
                 // DOWN and DOWN+RIGHT
                 case MOVE_DOWNRIGHT:
                     if(!blockedRIGHT) 
-                        enemies[i-1].x += 1;
+                        enemies[i].x += 1;
                 case MOVE_DOWN:
                     if(!blockedDOWN) 
-                        enemies[i-1].y += 1;
+                        enemies[i].y += 1;
                     break;
 
                 default:
                     if(!blockedLEFT) 
-                        enemies[i-1].x -= 1;
+                        enemies[i].x -= 1;
             }
         }
     }
@@ -268,16 +268,16 @@ void moveStars() {
 }
 
 void enemiesShoot() {
-    byte i = 1;
+    byte i = 0;
 
     while(numberOfBullets<MAXBULLETS && i<=numberOfEnemies) {
-        switch(enemies[i-1].shipType) {
+        switch(enemies[i].shipType) {
             case 1:
                 if(arduboy.everyXFrames(120) && random(0,100) > 60) {
                     Bullet b;
                     // Shoot the bullet up left from the enemy.
-                    b.x = enemies[i-1].x + 1;
-                    b.y = enemies[i-1].y + (enemies[i-1].height >> 1);
+                    b.x = enemies[i].x + 1;
+                    b.y = enemies[i].y + (enemies[i].height >> 1);
                     b.height = 2;
                     b.width = 2;
                     b.damage = 3;
@@ -293,8 +293,8 @@ void enemiesShoot() {
                 if(arduboy.everyXFrames(60) && random(0,100) > 70) {	
                     Bullet b;
                     // Shoot the bullet up left from the enemy.
-                    b.x = enemies[i-1].x + 1;
-                    b.y = enemies[i-1].y + 1;
+                    b.x = enemies[i].x + 1;
+                    b.y = enemies[i].y + 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
@@ -310,8 +310,8 @@ void enemiesShoot() {
                 if(arduboy.everyXFrames(240) && random(0,100) > 50) {
                     Bullet b;
                     // Shoot the bullet up left from the enemy.
-                    b.x = enemies[i-1].x + 1;
-                    b.y = enemies[i-1].y + 1;
+                    b.x = enemies[i].x + 1;
+                    b.y = enemies[i].y + 1;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
@@ -327,8 +327,8 @@ void enemiesShoot() {
 		if(arduboy.everyXFrames(20) && random(0,100) > 90) {
                     Bullet b;
                     // Shoot the bullet in front of the enemy.
-                    b.x = enemies[i-1].x - 1;
-                    b.y = enemies[i-1].y + 2;
+                    b.x = enemies[i].x - 1;
+                    b.y = enemies[i].y + 2;
                     b.height = 2;
                     b.width = 2;
                     b.damage = 2;
@@ -346,8 +346,8 @@ void enemiesShoot() {
                         if(numberOfBullets<MAXBULLETS) {
                             Bullet b;
                             // Shoot the bullet in front of the enemy.
-                            b.x = enemies[i-1].x - 1;
-                            b.y = enemies[i-1].y + 3 + j;
+                            b.x = enemies[i].x - 1;
+                            b.y = enemies[i].y + 3 + j;
                             b.height = 2;
                             b.width = 2;
                             b.damage = 2;
@@ -370,8 +370,8 @@ void enemiesShoot() {
                 if(arduboy.everyXFrames(60) && random(0,100) > 35) {	
                     if(numberOfBullets<MAXBULLETS) {
                         Bullet b;
-                        b.x = enemies[i-1].x + 3;
-                        b.y = enemies[i-1].y + 4;
+                        b.x = enemies[i].x + 3;
+                        b.y = enemies[i].y + 4;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -384,8 +384,8 @@ void enemiesShoot() {
                     }
                     if(numberOfBullets<MAXBULLETS) {
                         Bullet b;
-                        b.x = enemies[i-1].x + 5;
-                        b.y = enemies[i-1].y + 9;
+                        b.x = enemies[i].x + 5;
+                        b.y = enemies[i].y + 9;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -401,8 +401,8 @@ void enemiesShoot() {
                 if(arduboy.everyXFrames(30) && random(0,100) > 70) {	
                     if(numberOfBullets<MAXBULLETS) {
                         Bullet b;
-                        b.x = enemies[i-1].x + 5;
-                        b.y = enemies[i-1].y + 27;
+                        b.x = enemies[i].x + 5;
+                        b.y = enemies[i].y + 27;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -415,8 +415,8 @@ void enemiesShoot() {
                     }
                     if(numberOfBullets<MAXBULLETS) {
                         Bullet b;
-                        b.x = enemies[i-1].x + 3;
-                        b.y = enemies[i-1].y + 23;
+                        b.x = enemies[i].x + 3;
+                        b.y = enemies[i].y + 23;
                         b.height = 2;
                         b.width = 2;
                         b.damage = 1;
@@ -434,8 +434,8 @@ void enemiesShoot() {
                         if(numberOfBullets<MAXBULLETS) {
                             Bullet b;
                             // Shoot the bullet in front of the enemy.
-                            b.x = enemies[i-1].x + j/2;
-                            b.y = enemies[i-1].y + 20 + j%2;
+                            b.x = enemies[i].x + j/2;
+                            b.y = enemies[i].y + 20 + j%2;
                             b.height = 2;
                             b.width = 2;
                             b.damage = 1;
