@@ -28,39 +28,39 @@ void moveBullets() {
     for(byte i=0; i<numberOfBullets; i++) {
         switch(bullets[i].direction) {
             case MOVE_UPLEFT:
-                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
-                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
+                bullets[i].x -= bullets[i].speed;
+                bullets[i].y += bullets[i].speed;
                 break;
 
             case MOVE_UP:
-                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
+                bullets[i].y += bullets[i].speed;
                 break;
 
             case MOVE_UPRIGHT:
-                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
-                bullets[i].y = bullets[i].y + 1 + bullets[i].speed;
+                 bullets[i].x += bullets[i].speed;
+                bullets[i].y += bullets[i].speed;
                 break;
 
             case MOVE_LEFT:
-                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
+                bullets[i].x -= bullets[i].speed;
                 break;
 
             case MOVE_DOWNLEFT:
-                bullets[i].x = bullets[i].x - 1 - bullets[i].speed;
-                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
+                bullets[i].x -= bullets[i].speed;
+                bullets[i].y -= bullets[i].speed;
                 break;
 
             case MOVE_DOWN:
-                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
+                bullets[i].y -= bullets[i].speed;
                 break;
 
             case MOVE_DOWNRIGHT:
-                bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
-                bullets[i].y = bullets[i].y - 1 - bullets[i].speed;
+                bullets[i].x += bullets[i].speed;
+                bullets[i].y -= bullets[i].speed;
                 break;
             // MOVE_RIGHT as default
             default:
-                 bullets[i].x = bullets[i].x + 1 + bullets[i].speed;
+                 bullets[i].x += bullets[i].speed;
         }
     }
 }
@@ -292,7 +292,7 @@ void enemiesShoot() {
                     b.height = 2;
                     b.width = 2;
                     b.damage = 3;
-                    b.speed = 0;
+                    b.speed = 1;
                     b.alive = true;
                     b.playersBullet = false;
                     b.direction = MOVE_LEFT;
@@ -309,7 +309,7 @@ void enemiesShoot() {
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
-                    b.speed = 0;
+                    b.speed = 1;
                     b.alive = true;
                     b.playersBullet = false;
                     b.direction = MOVE_LEFT;
@@ -326,7 +326,7 @@ void enemiesShoot() {
                     b.height = 2;
                     b.width = 2;
                     b.damage = 1;
-                    b.speed = 0;
+                    b.speed = 1;
                     b.alive = true;
                     b.playersBullet = false;
                     b.direction = MOVE_LEFT;
@@ -362,7 +362,7 @@ void enemiesShoot() {
                             b.height = 2;
                             b.width = 2;
                             b.damage = 2;
-                            b.speed = 0;
+                            b.speed = 1;
                             b.alive = true;
                             b.playersBullet = false;
                             if(j == 0) {

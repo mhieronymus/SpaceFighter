@@ -188,7 +188,7 @@ void checkAlive() {
         explosions[0].x = player.x + (player.width >> 1);
         explosions[0].y = player.y + (player.height >> 1);
         for(byte j = 1; j <= MAXENEMIES; j++) {
-            explosions[j].tick = 255;
+            explosions[j].tick = 200;
         }
     } else {
         // int is needed or else i <- 0-1 = 255

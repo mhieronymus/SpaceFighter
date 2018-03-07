@@ -20,7 +20,7 @@
  *
  * @file        SpaceFighter.ino
  * @date        25.02.2018
- * @version     0.2
+ * @version     1.0
  * @author      Maicon Hieronymus <mhierony@students.uni-mainz.de>
  *
  * @brief This program is a shooter game set in space where you control a
