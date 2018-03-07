@@ -28,37 +28,27 @@ void moveBullets() {
     for(byte i=0; i<numberOfBullets; i++) {
         switch(bullets[i].direction) {
             case MOVE_UPLEFT:
-                bullets[i].x -= bullets[i].speed;
                 bullets[i].y += bullets[i].speed;
+            case MOVE_LEFT:
+                bullets[i].x -= bullets[i].speed;
                 break;
-
+            
+            case MOVE_UPRIGHT:
+                bullets[i].x += bullets[i].speed;
             case MOVE_UP:
                 bullets[i].y += bullets[i].speed;
                 break;
 
-            case MOVE_UPRIGHT:
-                 bullets[i].x += bullets[i].speed;
-                bullets[i].y += bullets[i].speed;
-                break;
-
-            case MOVE_LEFT:
-                bullets[i].x -= bullets[i].speed;
-                break;
+            
 
             case MOVE_DOWNLEFT:
                 bullets[i].x -= bullets[i].speed;
-                bullets[i].y -= bullets[i].speed;
-                break;
-
             case MOVE_DOWN:
                 bullets[i].y -= bullets[i].speed;
                 break;
 
             case MOVE_DOWNRIGHT:
                 bullets[i].x += bullets[i].speed;
-                bullets[i].y -= bullets[i].speed;
-                break;
-            // MOVE_RIGHT as default
             default:
                  bullets[i].x += bullets[i].speed;
         }
@@ -227,7 +217,6 @@ void moveEnemies() {
                     enemies[i-1].direction = MOVE_LEFT;
             }
 
-            //TODO Alter direction of enemy
             switch(enemies[i-1].direction) {
                 // UP and RIGHT+UP
                 case MOVE_UPRIGHT:
