@@ -18,7 +18,7 @@ void moveGame() {
 }
 
 void moveSupplies() {
-    for(byte i; i<noOfSupplies; ++i) {
+    for(byte i = 0; i < noOfSupplies; ++i) {
         if(supplies[i].alive)
             supplies[i].x--;
     }
