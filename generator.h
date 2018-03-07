@@ -49,7 +49,6 @@ void generateBoss();
  * @brief Generate random enemies with their strength based on the player's
  * score and the number of enemies on the screen. May generate nothing.
  * You may use this every second.
- * TODO: Check if the room is free to place the new enemy.
  */
 void generateEnemy();
 

@@ -58,19 +58,19 @@ void drawEnemies() {
             case 8:
                 for(byte j=0; j<4; j++) 
                     arduboy.drawPixel(enemies[i].x+j, enemies[i].y+2, 1);
-            
+
                 arduboy.drawPixel(enemies[i].x+3, enemies[i].y+3, 1);
                 arduboy.drawPixel(enemies[i].x+3, enemies[i].y+1, 1);
-            
+
                 arduboy.drawPixel(enemies[i].x+2, enemies[i].y+4, 1);
-                arduboy.drawPixel(enemies[i].x+2, enemies[i].y, 1);     
+                arduboy.drawPixel(enemies[i].x+2, enemies[i].y, 1);
                 break;
             case 16:
                 for(byte j=0; j<5; ++j) {
                     arduboy.drawPixel(enemies[i].x+j, enemies[i].y+3, 1);
                     arduboy.drawPixel(enemies[i].x+j, enemies[i].y+4, 1);
                 }
-            
+
                 for(byte j=0; j<3; ++j) {
                     arduboy.drawPixel(enemies[i].x+2+j, enemies[i].y+j, 1);
                     arduboy.drawPixel(enemies[i].x+4-j, 
@@ -160,7 +160,7 @@ void drawExtra() {
 
 bool drawExplosions() {
     bool finished = true;
-    // Not very efficiently...
+
     for(byte i=0; i<=MAXENEMIES; ++i) {
         if(explosions[i].tick < 15) {
             finished = false;
@@ -369,7 +369,7 @@ void drawHighscore(bool displayCurrentScore) {
         if(player.score < 10) arduboy.print("0");
         arduboy.print(player.score);
     }
-    
+
     arduboy.setCursor(72, 0);
     arduboy.print(F("High: "));
     arduboy.setCursor(104, 0);
@@ -378,6 +378,6 @@ void drawHighscore(bool displayCurrentScore) {
     if(high_score < 10) arduboy.print("0");
     arduboy.print(high_score);
     arduboy.drawLine(0, 9, SCREEN_WIDTH, 9, 1);
-    
+
     arduboy.display();
 }

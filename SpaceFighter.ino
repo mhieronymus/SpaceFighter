@@ -69,7 +69,7 @@ void gameOver() {
     while(draw_score) {
         drawHighscore(true);
         delay(200);
-        if(arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON)) 
+        if(arduboy.pressed(A_BUTTON) || arduboy.pressed(B_BUTTON))
             draw_score = false;
     }
 }
@@ -81,7 +81,7 @@ void gameOver() {
 void initEEPROM() {
     byte c1 = EEPROM.read(EEPROM_START_C1);
     byte c2 = EEPROM.read(EEPROM_START_C2);
-    // I just take two numbers in front of the actual highscore to check, if 
+    // I just take two numbers in front of the actual highscore to check, if
     // it is a highscore from my game.
     if(c1 != 83 || c2 != 77) {
         EEPROM.update(EEPROM_START_C1, 83);

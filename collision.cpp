@@ -204,9 +204,9 @@ void checkAlive() {
                 numberOfBullets--;
             }
         }
-            
+
         // int is needed or else i <- 0-1 = 255
-        for(int i=noOfSupplies-1; i>=0; --i) {
+        for(int i=noOfSupplies-1; i>=0; --i) {  
             if(!supplies[i].alive) {
                 if(i<noOfSupplies-1) {
                     supplies[i] = supplies[noOfSupplies-1];

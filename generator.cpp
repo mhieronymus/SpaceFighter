@@ -15,9 +15,9 @@ void initPlayer(bool newGame) {
     player.x = 0;
     player.y = 0;
     player.width = 14;
-    player.height = 14;        
+    player.height = 14;
     player.invincible = 2;
-    
+
     if(newGame) {
         player.score = 0;
         player.speed = 1; // Higher is better.
@@ -27,8 +27,8 @@ void initPlayer(bool newGame) {
         player.maxBullets = 3;
         player.fireSpeed = 80;
     }
-    
-    player.lifepoints = 3;        
+
+    player.lifepoints = 3;
     player.alive = true;
     player.bullets = 0;
     player.cooldown = 0;
@@ -97,13 +97,13 @@ void generateEnemy() {
     byte max_level_enemies = 4 + player.score/100;
     if(random(0, max_level_enemies) > numberOfEnemies
         && numberOfEnemies < MAXENEMIES && random(0,100) > 85)  {
-			
+
         Enemy e;
         e.x = SCREEN_WIDTH;
         e.y = random(10, SCREEN_HEIGHT-10);
         byte rnd = random(0, 5);
         e.alive = true;
-        e.direction = MOVE_LEFT; //random(0, 8)
+        e.direction = MOVE_LEFT;
         e.tick = 0;
         if(random(0, 100) > 85 && MAXSUPPLY > noOfSupplies) {
             e.supply = true;
