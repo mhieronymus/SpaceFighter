@@ -37,9 +37,7 @@ void moveBullets() {
                 bullets[i].x += bullets[i].speed;
             case MOVE_UP:
                 bullets[i].y += bullets[i].speed;
-                break;
-
-            
+                break;            
 
             case MOVE_DOWNLEFT:
                 bullets[i].x -= bullets[i].speed;
@@ -82,25 +80,31 @@ void moveEnemies() {
             // Check for collisions.
             for(byte j=0; j<numberOfEnemies; j++) {
                 if(j != i) {
-                    if(enemies[j].x+enemies[j].width == enemies[i].x-1 &&
-                       (abs(enemies[j].y-enemies[i].y) < enemies[i].height
-                       || abs(enemies[j].y-enemies[i].y) < enemies[j].height)) {
-                        blockedLEFT = true;
+                    const auto yDiff = abs(enemies[j].y - enemies[i].y);
+                    const auto xDiff = abs(enemies[j].x - enemies[i].x);
+                    if(yDiff < enemies[i].height || yDiff < enemies[j].height) {
+                        if(xDiff <= enemies[j].width 
+                            && enemies[j].x < enemies[i].x) {
+                            
+                            blockedLEFT = true;
+                        }
+                        if(xDiff <= enemies[i].width 
+                            && enemies[j].x > enemies[i].x) {
+                            
+                            blockedRIGHT = true;
+                        }
                     }
-                    if(enemies[j].x == enemies[i].x+1+enemies[i].width &&
-                       (abs(enemies[j].y-enemies[i].y) < enemies[i].height
-                       || abs(enemies[j].y-enemies[i].y) < enemies[j].height)) {
-                        blockedRIGHT = true;
-                    }
-                    if(enemies[j].y == enemies[i].y+1+enemies[i].height  &&
-                       (abs(enemies[j].x-enemies[i].x) < enemies[i].width
-                       || abs(enemies[j].x-enemies[i].x) < enemies[j].width)) {
-                        blockedDOWN = true;
-                    }
-                    if(enemies[j].y + enemies[j].height == enemies[i].y-1 &&
-                       (abs(enemies[j].x-enemies[i].x) < enemies[i].width
-                       || abs(enemies[j].x-enemies[i].x) < enemies[j].width)) {
-                        blockedUP = true;
+                    if(xDiff < enemies[i].width || xDiff < enemies[j].width) {
+                        if(yDiff <= enemies[j].height 
+                            && enemies[j].y < enemies[i].y) {
+                            
+                            blockedUP = true;
+                        }
+                        if(yDiff <= enemies[i].height 
+                            && enemies[j].y > enemies[i].y) {
+                            
+                            blockedDOWN = true;
+                        }
                     }
                 }
             }
