@@ -10,7 +10,7 @@ void checkCollision() {
 
 void checkCollisionPlayer() {
     if(player.alive) {
-        for(byte i=0; i<numberOfBullets; i++) {
+        for(byte i=0; i<numberOfBullets; ++i) {
             // First check if player and enemy/bullet collide on the x-coordinate
             // and then on the y-coordinate.
             if((abs(player.x-bullets[i].x) < player.width-3
@@ -32,7 +32,7 @@ void checkCollisionPlayer() {
     }
     // Only check this one if the player did not die due to a bullet.
     if(player.alive) {
-        for(byte i=0; i<numberOfEnemies; i++) {
+        for(byte i=0; i<numberOfEnemies; ++i) {
             if(((enemies[i].x-player.x < player.width && enemies[i].x > player.x)
                 || (player.x-enemies[i].x < enemies[i].width && enemies[i].x < player.x))
                 && ((enemies[i].y-player.y < player.height && enemies[i].y > player.y)
@@ -49,7 +49,7 @@ void checkCollisionPlayer() {
     }
     // Check for supplies.
     if(player.alive) {
-        for(byte i=0; i<noOfSupplies; i++) {
+        for(byte i=0; i<noOfSupplies; ++i) {
             if((abs(player.x-supplies[i].x) < player.width
                 && supplies[i].x >= player.x)
                 &&(abs(player.y-supplies[i].y) < player.height-1
@@ -127,8 +127,8 @@ void checkCollisionPlayer() {
 // Checks only collisions between bullets and enemies.
 // Collisions of player and enemies are done in checkCollisionPlayer.
 void checkCollisionEnemy() {
-    for(byte i=0; i<numberOfEnemies; i++) {
-        for(byte j=0; j<numberOfBullets; j++) {
+    for(byte i=0; i<numberOfEnemies; ++i) {
+        for(byte j=0; j<numberOfBullets; ++j) {
             if(bullets[j].playersBullet
                 && (abs(enemies[i].x-bullets[j].x) < enemies[i].width
                 && bullets[j].x >= enemies[i].x)
@@ -152,7 +152,7 @@ void checkCollisionEnemy() {
 }
 
 void checkEnemiesInFrame() {
-    for(byte i=0; i<numberOfEnemies; i++) {
+    for(byte i=0; i<numberOfEnemies; ++i) {
         if(enemies[i].shipType != 32 && (enemies[i].x > 128 || enemies[i].y > 64
             || enemies[i].x == 0 || enemies[i].y == 0)) {
 
@@ -162,7 +162,7 @@ void checkEnemiesInFrame() {
 }
 
 void checkBulletsInFrame() {
-    for(byte i=0; i<numberOfBullets; i++) {
+    for(byte i=0; i<numberOfBullets; ++i) {
         if(bullets[i].x > 128 || bullets[i].y > 64
             || bullets[i].x == 0 || bullets[i].y == 0) {
 
@@ -172,7 +172,7 @@ void checkBulletsInFrame() {
 }
 
 void checkSuppliesInFrame() {
-    for(byte i=0; i<noOfSupplies; i++) {
+    for(byte i=0; i<noOfSupplies; ++i) {
         if(supplies[i].x > 128 || supplies[i].y > 64
             || supplies[i].x == 0 || supplies[i].y == 0) {
 
@@ -187,12 +187,12 @@ void checkAlive() {
         explosions[0].tick = 0;
         explosions[0].x = player.x + (player.width >> 1);
         explosions[0].y = player.y + (player.height >> 1);
-        for(byte j = 1; j <= MAXENEMIES; j++) {
+        for(byte j = 1; j <= MAXENEMIES; ++j) {
             explosions[j].tick = 200;
         }
     } else {
         // int is needed or else i <- 0-1 = 255
-        for(int i=numberOfBullets-1; i>=0; i--) {
+        for(int i=numberOfBullets-1; i>=0; --i) {
             if(!bullets[i].alive) {
                 // player.bullets should always be bigger than 0 if a player bullet is available...
                 if(bullets[i].playersBullet && player.bullets > 0) {
@@ -206,7 +206,7 @@ void checkAlive() {
         }
             
         // int is needed or else i <- 0-1 = 255
-        for(int i=noOfSupplies-1; i>=0; i--) {
+        for(int i=noOfSupplies-1; i>=0; --i) {
             if(!supplies[i].alive) {
                 if(i<noOfSupplies-1) {
                     supplies[i] = supplies[noOfSupplies-1];
@@ -216,7 +216,7 @@ void checkAlive() {
         }
             
         // For all enemies, if he is not alive, check if he is within the frame.
-        for(int i=numberOfEnemies-1; i>=0; i--) {
+        for(int i=numberOfEnemies-1; i>=0; --i) {
             if(!enemies[i].alive) {
                 byte j=0;
                 if(enemies[i].x <= 128
@@ -224,7 +224,7 @@ void checkAlive() {
                     && enemies[i].y > 0) {
 
                     // Search the first free slot in explosions and add a new explosion.
-                    for(byte j = 0; j <= MAXENEMIES; j++) {
+                    for(byte j = 0; j <= MAXENEMIES; ++j) {
                         if(explosions[j].tick >= 75) {
                             explosions[j].tick = 0;
                             explosions[j].x = enemies[i].x + (enemies[i].width >> 1);

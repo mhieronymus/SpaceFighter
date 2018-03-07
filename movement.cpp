@@ -18,14 +18,14 @@ void moveGame() {
 }
 
 void moveSupplies() {
-    for(byte i; i<noOfSupplies; i++) {
+    for(byte i; i<noOfSupplies; ++i) {
         if(supplies[i].alive)
             supplies[i].x--;
     }
 }
 
 void moveBullets() {
-    for(byte i=0; i<numberOfBullets; i++) {
+    for(byte i=0; i<numberOfBullets; ++i) {
         switch(bullets[i].direction) {
             case MOVE_UPLEFT:
                 bullets[i].y += bullets[i].speed;
@@ -72,7 +72,7 @@ void movePlayer() {
 }
 
 void moveEnemies() {
-    for(byte i=0; i<numberOfEnemies; i++) {
+    for(byte i=0; i<numberOfEnemies; ++i) {
         if(arduboy.everyXFrames(enemies[i].speed)) {
             bool blockedUP = false;
             bool blockedDOWN = false;
@@ -262,15 +262,13 @@ void moveEnemies() {
 }
 
 void moveStars() {
-    for(byte i=0; i<numberOfStars; i++) {
+    for(byte i=0; i<numberOfStars; ++i) {
         stars[i].x--;
     }
 }
 
 void enemiesShoot() {
-    byte i = 0;
-
-    while(numberOfBullets<MAXBULLETS && i<=numberOfEnemies) {
+    for(byte i=0; (numberOfBullets<MAXBULLETS && i<numberOfEnemies); ++i) {
         switch(enemies[i].shipType) {
             case 1:
                 if(arduboy.everyXFrames(120) && random(0,100) > 60) {
@@ -457,7 +455,6 @@ void enemiesShoot() {
                 
                 break;
         }
-        i++;
     }
 }
 

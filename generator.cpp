@@ -36,26 +36,26 @@ void initPlayer(bool newGame) {
 }
 
 void initEnemies() {
-    for(byte i=0; i<MAXENEMIES; i++) {
+    for(byte i=0; i<MAXENEMIES; ++i) {
         enemies[i].alive=false;
     }
 }
 
 void initBullets() {
-    for(byte i=0; i<MAXBULLETS; i++) {
+    for(byte i=0; i<MAXBULLETS; ++i) {
         bullets[i].alive=false;
         bullets[i].playersBullet = false;
     }
 }
 
 void initSupplies() {
-    for(byte i=0; i<MAXSUPPLY; i++) {
+    for(byte i=0; i<MAXSUPPLY; ++i) {
         supplies[i].alive=false;
     }
 }
 
 void initExplosions() {
-    for(byte i=0; i<=MAXENEMIES; i++) {
+    for(byte i=0; i<=MAXENEMIES; ++i) {
         explosions[i].tick=200;
     }
 }

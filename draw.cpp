@@ -30,66 +30,67 @@ void showTitle() {
 }
 
 void drawStars() {
-    for(byte i=0; i<numberOfStars; i++) {
+    for(byte i=0; i<numberOfStars; ++i) {
         arduboy.drawPixel(stars[i].x, stars[i].y, 1);
     }
 }
 
 void drawPlayer() {
-    arduboy.drawBitmap(player.x, player.y, ship0, player.height, player.width, 1);
+    arduboy.drawBitmap(player.x, player.y, ship0, 
+                       player.height, player.width, 1);
 }
 
 void drawEnemies() {
-    for(byte i=1; i<=numberOfEnemies; i++) {
-        switch(enemies[i-1].shipType) {
+    for(byte i=0; i<numberOfEnemies; ++i) {
+        switch(enemies[i].shipType) {
             case 1:
-                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                    enemy0, enemies[i-1].width, enemies[i-1].height, 1);
+                arduboy.drawBitmap(enemies[i].x, enemies[i].y,
+                    enemy0, enemies[i].width, enemies[i].height, 1);
                 break;
             case 2:
-                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                    enemy1, enemies[i-1].width, enemies[i-1].height, 1);
+                arduboy.drawBitmap(enemies[i].x, enemies[i].y,
+                    enemy1, enemies[i].width, enemies[i].height, 1);
                 break;
             case 4:
-                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                    enemy2, enemies[i-1].width, enemies[i-1].height, 1);
+                arduboy.drawBitmap(enemies[i].x, enemies[i].y,
+                    enemy2, enemies[i].width, enemies[i].height, 1);
                 break;
             case 8:
                 for(byte j=0; j<4; j++) 
-                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+2, 1);
+                    arduboy.drawPixel(enemies[i].x+j, enemies[i].y+2, 1);
             
-                arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+3, 1);
-                arduboy.drawPixel(enemies[i-1].x+3, enemies[i-1].y+1, 1);
+                arduboy.drawPixel(enemies[i].x+3, enemies[i].y+3, 1);
+                arduboy.drawPixel(enemies[i].x+3, enemies[i].y+1, 1);
             
-                arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y+4, 1);
-                arduboy.drawPixel(enemies[i-1].x+2, enemies[i-1].y, 1);     
+                arduboy.drawPixel(enemies[i].x+2, enemies[i].y+4, 1);
+                arduboy.drawPixel(enemies[i].x+2, enemies[i].y, 1);     
                 break;
             case 16:
-                for(byte j=0; j<5; j++) {
-                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+3, 1);
-                    arduboy.drawPixel(enemies[i-1].x+j, enemies[i-1].y+4, 1);
+                for(byte j=0; j<5; ++j) {
+                    arduboy.drawPixel(enemies[i].x+j, enemies[i].y+3, 1);
+                    arduboy.drawPixel(enemies[i].x+j, enemies[i].y+4, 1);
                 }
             
-                for(byte j=0; j<3; j++) {
-                    arduboy.drawPixel(enemies[i-1].x+2+j, enemies[i-1].y+j, 1);
-                    arduboy.drawPixel(enemies[i-1].x+4-j, 
-                        enemies[i-1].y+j+5, 1);
+                for(byte j=0; j<3; ++j) {
+                    arduboy.drawPixel(enemies[i].x+2+j, enemies[i].y+j, 1);
+                    arduboy.drawPixel(enemies[i].x+4-j, 
+                        enemies[i].y+j+5, 1);
                 }
                 break;
             case 32:
                 // The boss is drawn slightly differently
-                arduboy.drawBitmap(enemies[i-1].x-19, enemies[i-1].y,
-                    boss1, enemies[i-1].width+19, enemies[i-1].height, 1);
+                arduboy.drawBitmap(enemies[i].x-19, enemies[i].y,
+                    boss1, enemies[i].width+19, enemies[i].height, 1);
                 break;
             default:
-                arduboy.drawBitmap(enemies[i-1].x, enemies[i-1].y,
-                    enemy2, enemies[i-1].width, enemies[i-1].height, 1);
+                arduboy.drawBitmap(enemies[i].x, enemies[i].y,
+                    enemy2, enemies[i].width, enemies[i].height, 1);
         }
     }
 }
 
 void drawBullets() {
-    for(byte i=0; i<numberOfBullets; i++) {
+    for(byte i=0; i<numberOfBullets; ++i) {
         arduboy.drawPixel(bullets[i].x, bullets[i].y, 1);
         arduboy.drawPixel(bullets[i].x-1, bullets[i].y, 1);
         arduboy.drawPixel(bullets[i].x, bullets[i].y-1, 1);
@@ -98,7 +99,7 @@ void drawBullets() {
 }
 
 void drawSupply() {
-    for(byte i=0; i<noOfSupplies; i++) {
+    for(byte i=0; i<noOfSupplies; ++i) {
         if(supplies[i].alive) {
             arduboy.drawPixel(supplies[i].x, supplies[i].y, 1);
             arduboy.drawPixel(supplies[i].x-1, supplies[i].y, 1);
@@ -160,7 +161,7 @@ void drawExtra() {
 bool drawExplosions() {
     bool finished = true;
     // Not very efficiently...
-    for(byte i=0; i<=MAXENEMIES; i++) {
+    for(byte i=0; i<=MAXENEMIES; ++i) {
         if(explosions[i].tick < 15) {
             finished = false;
             arduboy.drawPixel(explosions[i].x, explosions[i].y, 1);
@@ -287,7 +288,7 @@ void drawScore() {
 void drawLives() {
     // Draw multiple hearts.
     if(player.lives < 4) {
-        for(byte i=0; i<player.lives; i++) {
+        for(byte i=0; i<player.lives; ++i) {
             arduboy.drawPixel(i*7+2, 1, 1);
             arduboy.drawPixel(i*7+3, 1, 1);
             arduboy.drawPixel(i*7+1, 0, 1);
@@ -352,7 +353,7 @@ void drawGameOver() {
 }
 
 void drawHealthBar() {
-    for(byte i=0; i<player.lifepoints; i++) {
+    for(byte i=0; i<player.lifepoints; ++i) {
         arduboy.fillRect(i*4+28, 1, 2, 2, 1); 
     }
 }
