@@ -18,7 +18,7 @@ void checkCollisionPlayer() {
                 &&(abs(player.y-bullets[i].y) < player.height-1
                 && bullets[i].y >= player.y)
                 && !bullets[i].playersBullet && player.invincible == 0) {
-                
+
                 if(bullets[i].damage >= player.lifepoints) {
                     player.alive = false;
                     player.lives--;
@@ -145,7 +145,7 @@ void checkCollisionEnemy() {
                     }
                 } else {
                     enemies[i].lifepoints -= bullets[j].damage;
-                }                    
+                }
             }
         }
     }
@@ -214,7 +214,7 @@ void checkAlive() {
                 noOfSupplies--;
             }
         }
-            
+
         // For all enemies, if he is not alive, check if he is within the frame.
         for(int i=numberOfEnemies-1; i>=0; --i) {
             if(!enemies[i].alive) {

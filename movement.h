@@ -35,6 +35,11 @@ void moveEnemies();
 void moveStars();
 
 /**
+ * @brief Add a bullet to the global array of bullets.
+ */
+void addBullet(Bullet & bullet);
+
+/**
  * @brief Enemies shoot
  */
 void enemiesShoot();
